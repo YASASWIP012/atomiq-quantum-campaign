@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en" data-accent="cobalt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Six customers, one campaign · Atomiq Hackathon entry</title>
+<meta name="description" content="A Qiskit pipeline that predicts who will subscribe, picks six customers with constraint-preserving QAOA, and estimates the chance three convert. Every quantum number is checked against an exact answer.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F62FE'/%3E%3Ccircle cx='16' cy='16' r='5' fill='none' stroke='white' stroke-width='2.4'/%3E%3Cellipse cx='16' cy='16' rx='11' ry='4.2' fill='none' stroke='white' stroke-width='1.6' transform='rotate(-30 16 16)'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+/* ---------- Tokens ---------- */
+:root{
+  --bg:#FFFFFF; --bg-alt:#F5F5F7; --sunk:var(--bg-alt); --surface:#FFFFFF; --surface-2:#FAFAFB; --band-edge:none;
+  --ink:#1D1D1F; --ink-2:#515154; --ink-3:#6E6E73; --ink-4:#86868B;
+  --line:rgba(0,0,0,.08); --line-2:rgba(0,0,0,.14); --tint:rgba(0,0,0,.045);
+  --shadow-rgb:0 0 0;
+  --accent:#F7A028; --accent-hi:#FFC45A; --accent-ink:#8F5200; --accent-wash:#FFF3DE; --on-accent:#2A1700;
+  --focus:var(--accent-ink); --marker:#D4F53C; --success:#1F7A3D;
+  --font-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-body:var(--font-display);
+  --font-serif:"Instrument Serif",ui-serif,Georgia,serif;
+  --font-mono:"JetBrains Mono","Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --display-weight:700; --display-track:-.042em;
+  --fs-display:clamp(42px,6.4vw,80px); --fs-h2:clamp(32px,4.4vw,54px); --fs-h3:clamp(24px,3vw,38px);
+  --fs-lead:clamp(17.5px,1.55vw,21px); --fs-body:16.5px; --fs-small:14.5px; --fs-micro:13px;
+  --container:1120px; --text-max:680px; --gutter:24px; --section-y:clamp(80px,10vw,128px); --bleed:clamp(64px,9vw,140px);
+  --r-xs:7px; --r-sm:10px; --r-md:14px; --r-lg:20px; --r-xl:28px; --r-2xl:32px; --r-pill:999px;
+  --ring:0 0 0 1px var(--line);
+  --shadow-1:0 0 0 .5px rgba(var(--shadow-rgb)/.10),0 1px 2px rgba(var(--shadow-rgb)/.06),0 6px 18px rgba(var(--shadow-rgb)/.06);
+  --shadow-2:0 0 0 .5px rgba(var(--shadow-rgb)/.10),0 2px 6px rgba(var(--shadow-rgb)/.05),0 24px 60px -12px rgba(var(--shadow-rgb)/.18);
+  --shadow-3:0 0 0 1px rgba(var(--shadow-rgb)/.06),0 40px 90px -30px rgba(var(--shadow-rgb)/.42);
+  --ease-out:cubic-bezier(.22,1,.36,1); --ease-spring:cubic-bezier(.34,1.36,.64,1);
+  --dur-press:.12s; --dur-hover:.2s; --dur-ui:.3s; --dur-reveal:.7s;
+  --wallpaper:radial-gradient(90% 80% at 12% 100%,#FFC978 0,transparent 60%),radial-gradient(70% 70% at 88% 8%,#BFD9FF 0,transparent 62%),linear-gradient(160deg,#F7F3EE,#ECEFF6);
+  --wallpaper-soft:radial-gradient(70% 60% at 85% 0%,#DCE8FF 0,transparent 60%),radial-gradient(60% 60% at 10% 100%,#FFE6C2 0,transparent 60%),linear-gradient(160deg,#F7F7F9,#EEF0F4);
+  --wash:linear-gradient(#DCE8FE,#EEF4FF 55%,var(--bg));
+  --chrome:linear-gradient(#FBFBFB,#F1F1F2); --chrome-line:rgba(0,0,0,.08); --chrome-ink:#6E6E73;
+  --key-bg:linear-gradient(#fff,#F2F2F4); --key-ink:#3A3A3C; --key-edge:inset 0 0 0 1px rgba(0,0,0,.10),0 1.5px 0 rgba(0,0,0,.18),0 2px 3px rgba(0,0,0,.06);
+}
+[data-accent="cobalt"]{--accent:#2F5BFF;--accent-hi:#5B8CFF;--accent-ink:#1B3BCC;--on-accent:#fff}
+[data-accent]{--accent-wash:color-mix(in oklab,var(--accent) 14%,var(--surface))}
+@media (max-width:640px){:root{--gutter:18px}}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:88px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--fs-body)/1.6 var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden}
+img,svg,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+p{margin:0}
+::selection{background:var(--marker);color:#17150F}
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.container{width:min(100% - 2*var(--gutter),var(--container));margin-inline:auto}
+h1,.t-display{margin:0;font-family:var(--font-display);font-size:var(--fs-display);font-weight:var(--display-weight);line-height:1;letter-spacing:var(--display-track);text-wrap:balance}
+h2,.t-h2{margin:0;font-family:var(--font-display);font-size:var(--fs-h2);font-weight:var(--display-weight);line-height:1.05;letter-spacing:calc(var(--display-track) + .006em);text-wrap:balance}
+h3,.t-h3{margin:0;font-family:var(--font-display);font-size:var(--fs-h3);font-weight:var(--display-weight);line-height:1.1;letter-spacing:calc(var(--display-track) + .012em);text-wrap:balance}
+.t-title{margin:0;font-size:17px;font-weight:600;line-height:1.35;letter-spacing:-.015em}
+.lead{font-size:var(--fs-lead);line-height:1.5;letter-spacing:-.011em;color:var(--ink-3);max-width:620px;text-wrap:pretty}
+.t-small{font-size:var(--fs-small);line-height:1.55;color:var(--ink-3)}
+.t-micro{font-size:var(--fs-micro);color:var(--ink-3)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+.eyebrow svg{width:14px;height:14px;stroke-width:2}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.t-muted{color:var(--ink-4)}
+.t-accent{color:var(--accent-ink)}
+.t-mono{font-family:var(--font-mono);font-size:.92em;letter-spacing:0}
+.hl{position:relative;z-index:0;white-space:nowrap}
+.hl::after{content:"";position:absolute;z-index:-1;left:.02em;right:.04em;bottom:.05em;height:.17em;border-radius:99px;background:var(--marker)}
+.btn{--h:48px;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:var(--h);padding:0 24px;border:0;border-radius:var(--r-pill);font:600 15px/1 var(--font-body);letter-spacing:-.01em;white-space:nowrap;cursor:pointer;transition:transform var(--dur-press) var(--ease-spring),box-shadow var(--dur-hover) var(--ease-out),background-color var(--dur-hover) var(--ease-out),filter var(--dur-hover) var(--ease-out)}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:scale(.97)}
+.btn svg{width:17px;height:17px}
+.btn-sm{--h:36px;padding:0 15px;font-size:13.5px}
+.btn-lg{--h:54px;padding:0 28px;font-size:16px}
+.btn-ink{background:var(--ink);color:var(--bg)}
+.btn-ink:hover{background:color-mix(in oklab,var(--ink) 85%,var(--bg))}
+.btn-candy{color:var(--on-accent);background:linear-gradient(135deg,var(--accent-hi),var(--accent) 60%,color-mix(in oklab,var(--accent) 88%,#000));box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(0,0,0,.14),0 0 0 1px color-mix(in oklab,var(--accent-ink) 40%,transparent),0 8px 20px -8px color-mix(in oklab,var(--accent-ink) 70%,transparent)}
+.btn-candy:hover{filter:brightness(1.04) saturate(1.06)}
+.btn-outline{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-2)}
+.btn-outline:hover{background:var(--surface-2)}
+.btn-ghost{background:var(--tint);color:var(--ink)}
+.nav{position:fixed;inset:12px 0 auto;z-index:50;display:flex;justify-content:center;padding-inline:12px;pointer-events:none}
+.nav__bar{pointer-events:auto;width:min(100%,980px);height:56px;display:flex;align-items:center;gap:8px;padding:0 8px 0 14px;border-radius:var(--r-pill);background:color-mix(in oklab,var(--surface) 74%,transparent);-webkit-backdrop-filter:blur(20px) saturate(1.6);backdrop-filter:blur(20px) saturate(1.6);box-shadow:0 0 0 1px var(--line),0 10px 30px -14px rgba(var(--shadow-rgb)/.22)}
+.nav__brand{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:650;letter-spacing:-.02em}
+.nav__links{display:flex;gap:2px;margin-inline:auto}
+.nav__links a{padding:8px 12px;border-radius:var(--r-pill);font-size:14px;font-weight:500;color:var(--ink-2);transition:background-color var(--dur-hover),color var(--dur-hover)}
+.nav__links a:hover{background:var(--tint);color:var(--ink)}
+.app-icon{width:28px;height:28px;border-radius:22.5%;flex:none;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.12)}
+@media (max-width:760px){.nav__links{display:none}.nav__bar{justify-content:space-between}}
+.badge{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 12px 0 4px;border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--shadow-1);font-size:13px;font-weight:550;color:var(--ink-2)}
+.badge__tag{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:var(--r-pill);background:var(--ink);color:var(--bg);font-size:12px;font-weight:650}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px;border:0;border-radius:var(--r-pill);background:var(--surface);box-shadow:var(--ring);font:550 13.5px/1 var(--font-body);color:var(--ink-2)}
+.chip--soft{background:var(--tint);box-shadow:none}
+button.chip{cursor:pointer;transition:background-color var(--dur-hover),box-shadow var(--dur-hover),color var(--dur-hover)}
+button.chip:hover{background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);box-shadow:none}
+.segmented{display:inline-flex;gap:2px;padding:4px;border-radius:var(--r-pill);background:var(--tint)}
+.segmented button{height:34px;padding:0 18px;border:0;border-radius:var(--r-pill);background:transparent;font:550 14px/1 var(--font-body);color:var(--ink-3);cursor:pointer;transition:background-color var(--dur-ui) var(--ease-out),color var(--dur-ui) var(--ease-out),box-shadow var(--dur-ui) var(--ease-out)}
+.segmented [aria-selected="true"],.segmented [aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-1)}
+.range{--val:50%;-webkit-appearance:none;appearance:none;width:100%;height:24px;margin:0;background:transparent;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--accent) var(--val),var(--tint) var(--val))}
+.range::-moz-range-track{height:6px;border-radius:99px;background:var(--tint)}
+.range::-moz-range-progress{height:6px;border-radius:99px;background:var(--accent)}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;margin-top:-8px;border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.2);transition:transform var(--dur-press) var(--ease-spring)}
+.range::-moz-range-thumb{width:22px;height:22px;border:0;border-radius:50%;background:#fff;box-shadow:0 0 0 .5px rgba(0,0,0,.14),0 2px 6px rgba(0,0,0,.2)}
+kbd{display:inline-grid;place-items:center;min-width:26px;height:26px;padding:0 7px;border-radius:var(--r-xs);font:500 12.5px/1 var(--font-mono);color:var(--key-ink);background:var(--key-bg);box-shadow:var(--key-edge)}
+@media (pointer:coarse){.btn-sm{--h:44px}.chip,.segmented button{min-height:44px}}
+.section{padding-block:var(--section-y)}
+.section--alt{background:var(--bg-alt);box-shadow:var(--band-edge)}
+.section-head{max-width:var(--text-max);margin:0 auto clamp(40px,5vw,64px);text-align:center}
+.section-head .eyebrow{margin-bottom:16px}
+.section-head .lead{margin:18px auto 0}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.split{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(32px,5vw,64px);align-items:center}
+.split--flip>:first-child{order:2}
+.split .eyebrow{margin-bottom:14px}.split .lead,.split .t-small{margin-top:14px}.split .chips{margin-top:20px}
+.stack>*+*{margin-top:clamp(72px,9vw,120px)}
+.try{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:16px;align-items:stretch}
+@media (max-width:900px){.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}.split,.try{grid-template-columns:1fr}.split--flip>:first-child{order:0}}
+@media (max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.hero{padding-top:calc(80px + clamp(48px,8vw,96px));text-align:center}
+.hero .badge{margin-bottom:24px}
+.hero h1{max-width:900px;margin-inline:auto}
+.hero .lead{margin:22px auto 0}
+.cta-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:32px}
+.trust{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-top:16px;font-size:13.5px;color:var(--ink-3)}
+.trust span+span::before{content:"·";margin-right:14px;color:var(--ink-4)}
+@media (max-width:640px){.trust{flex-direction:column;align-items:center;gap:2px}.trust span+span::before{display:none}}
+.hero__visual{margin-top:clamp(44px,6vw,72px)}
+.bleed{position:relative;z-index:1;margin-bottom:calc(-1*var(--bleed))}
+.after-bleed{padding-top:calc(var(--section-y) + var(--bleed))}
+.hero--wash{background:var(--wash)}
+.card{color:var(--ink);background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--ring);padding:24px}
+.card--flat{background:var(--sunk);box-shadow:none}
+.section--alt .card--flat{background:var(--surface);box-shadow:var(--ring)}
+.card--raised{box-shadow:var(--shadow-2)}
+.card--chosen{box-shadow:0 0 0 1.5px var(--accent),var(--shadow-1)}
+.panel{border-radius:var(--r-xl);background:var(--sunk);padding:clamp(24px,3vw,40px);overflow:hidden}
+.tile{display:flex;align-items:flex-start;gap:14px;padding:20px;border-radius:var(--r-lg);background:var(--surface);box-shadow:var(--ring);transition:box-shadow var(--dur-hover) var(--ease-out),transform var(--dur-hover) var(--ease-out)}
+.tile:hover{box-shadow:var(--shadow-1);transform:translateY(-2px)}
+.tile .t-title{font-size:16px;margin:1px 0 4px}
+.tile p{font-size:var(--fs-small);line-height:1.5;color:var(--ink-3)}
+.icon-tile{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:var(--accent-wash);color:var(--accent-ink)}
+.icon-tile svg{width:19px;height:19px;stroke-width:1.75}
+.stage{position:relative;padding:clamp(18px,4vw,56px);border-radius:var(--r-xl);background:var(--wallpaper);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.stage--soft{background:var(--wallpaper-soft)}
+.window{position:relative;overflow:hidden;border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:var(--shadow-3);text-align:left}
+.window__bar{position:relative;display:flex;align-items:center;height:38px;padding:0 14px;background:var(--chrome);border-bottom:1px solid var(--chrome-line);font-size:12.5px;font-weight:600;color:var(--chrome-ink)}
+.window__title{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap}
+.lights{display:flex;gap:8px}
+.lights i{width:12px;height:12px;border-radius:50%;background:#FF5F57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.14)}
+.lights i:nth-child(2){background:#FEBC2E}.lights i:nth-child(3){background:#28C840}
+.float{position:absolute;z-index:2;color:var(--ink);padding:12px 14px;border-radius:var(--r-md);background:color-mix(in oklab,var(--surface) 90%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);box-shadow:var(--shadow-2);font-size:13px;text-align:left}
+@media (max-width:760px){.float{display:none}}
+.faq{max-width:760px;margin-inline:auto;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 0;list-style:none;cursor:pointer;font-size:17px;font-weight:600;letter-spacing:-.015em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-size:22px;font-weight:400;color:var(--ink-3);transition:transform var(--dur-ui) var(--ease-out)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{max-width:640px;margin-bottom:22px;color:var(--ink-3)}
+.footer{padding:40px 0 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink-3)}
+.footer .container{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 32px}
+.js .reveal{opacity:0;transform:translateY(14px);transition:opacity var(--dur-reveal) var(--ease-out),transform var(--dur-reveal) var(--ease-out);transition-delay:calc(var(--i,0)*80ms)}
+.js .reveal.in{opacity:1;transform:none}
+@media print{.js .reveal{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.js .reveal{opacity:1;transform:none;transition:none}*{animation:none!important}}
+
+/* ---------- IBM brand layer: Plex type, IBM Blue 60 accent ---------- */
+:root{
+  --font-display:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --font-body:var(--font-display);
+  --font-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --display-weight:600; --display-track:-.032em;
+}
+[data-accent="cobalt"]{--accent:#0F62FE;--accent-hi:#4589FF;--accent-ink:#0043CE;--on-accent:#fff}
+
+/* ---------- Page components ---------- */
+.stat{display:flex;flex-direction:column;gap:6px}
+.stat__num{font:600 clamp(30px,3.4vw,42px)/1 var(--font-display);letter-spacing:-.03em}
+.stat__label{font-size:var(--fs-small);color:var(--ink-3);line-height:1.45}
+.stat__src{margin-top:auto;padding-top:10px;font:500 12.5px/1.3 var(--font-mono);color:var(--ink-3)}
+.stat__src a{border-bottom:1px solid var(--line-2)}
+.ids{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.id{display:inline-flex;align-items:center;height:28px;padding:0 10px;border-radius:var(--r-pill);background:var(--accent-wash);color:var(--accent-ink);font:500 13px/1 var(--font-mono)}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-weight:600;color:var(--ink-3);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl td.num,.tbl th.num{text-align:right}
+.tbl tr.is-on td{background:var(--accent-wash)}
+.tbl .mono{font-family:var(--font-mono);font-size:12.5px}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bits{display:inline-flex;gap:3px;font:500 15px/1 var(--font-mono)}
+.bits b{display:grid;place-items:center;width:22px;height:28px;border-radius:6px;background:var(--tint);font-weight:500;color:var(--ink-3)}
+.bits b.on{background:var(--accent);color:#fff}
+.fig{border-radius:var(--r-md);background:#fff;box-shadow:var(--shadow-2);overflow:hidden}
+.fig img{width:100%;height:auto}
+.fig figcaption{padding:10px 14px;font-size:13px;color:var(--ink-3);border-top:1px solid var(--line)}
+figure{margin:0}
+.bar{position:relative;height:8px;border-radius:99px;background:var(--tint);overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--accent)}
+.outcome{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px 14px;padding:10px 12px;border-radius:var(--r-sm);cursor:pointer;border:0;background:transparent;width:100%;text-align:left;font:inherit;color:inherit}
+.outcome:hover{background:var(--tint)}
+.outcome .k{font:500 13px/1 var(--font-mono)}
+.outcome .p{font:500 13px/1 var(--font-mono);color:var(--ink-2)}
+.outcome .bar{grid-column:1/-1;height:6px}
+.outcome.is-opt .k{color:var(--accent-ink)}
+.cand{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.cand button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;border:0;border-radius:var(--r-md);background:var(--surface);box-shadow:var(--ring);font:inherit;color:var(--ink);cursor:pointer;text-align:left;transition:box-shadow var(--dur-hover),background-color var(--dur-hover),transform var(--dur-press) var(--ease-spring)}
+.cand button:active{transform:scale(.97)}
+.cand button[aria-pressed="true"]{background:var(--accent-wash);box-shadow:0 0 0 1.5px var(--accent)}
+.cand .cid{font:500 13.5px/1 var(--font-mono)}
+.cand .cv{font-size:12.5px;color:var(--ink-3)}
+@media (max-width:640px){.cand{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.readout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+.readout div{padding:12px;border-radius:var(--r-md);background:var(--surface);box-shadow:var(--ring)}
+.readout b{display:block;font:600 20px/1.1 var(--font-display);letter-spacing:-.02em}
+.readout span{font-size:12.5px;color:var(--ink-3)}
+@media (max-width:640px){.readout{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--success)}
+.status.bad{color:#A2191F}.status.bad::before{background:#DA1E28}
+.sl{display:grid;grid-template-columns:62px 1fr 52px;align-items:center;gap:10px;font-size:13.5px}
+.sl .t-mono{font-size:13px}
+.hist{display:flex;align-items:flex-end;gap:10px;height:170px;padding:12px 4px 0}
+.hist .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.hist .bars{position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}
+.hist .b1{width:42%;border-radius:6px 6px 0 0;background:var(--accent)}
+.hist .b2{width:42%;border-radius:6px 6px 0 0;background:var(--line-2)}
+.hist .lab{font:500 12.5px/1 var(--font-mono);color:var(--ink-3)}
+.hist .col.win .lab{color:var(--accent-ink)}
+.legend{display:flex;gap:16px;font-size:12.5px;color:var(--ink-3);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+pre.code{margin:0;padding:18px 20px;border-radius:var(--r-md);background:#161616;color:#F4F4F4;font:400 13.5px/1.7 var(--font-mono);overflow-x:auto}
+pre.code .c{color:#8D8D8D}
+.note{font-size:13px;color:var(--ink-3);margin-top:12px}
+.try>*,.split>*,.grid>*,.hero__visual,.stage,.window{min-width:0}
+.tbl-wrap{max-width:100%}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="nav__bar">
+    <a class="nav__brand" href="#top" aria-label="Six customers, one campaign: home">
+      <svg class="app-icon" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0F62FE"/><circle cx="16" cy="16" r="5" fill="none" stroke="#fff" stroke-width="2.4"/><ellipse cx="16" cy="16" rx="11" ry="4.2" fill="none" stroke="#fff" stroke-width="1.6" transform="rotate(-30 16 16)"/></svg>
+      Six customers
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#answer">Answer</a><a href="#pipeline">Pipeline</a><a href="#try">Try it</a><a href="#evidence">Evidence</a><a href="#reproduce">Reproduce</a>
+    </nav>
+    <a class="btn btn-ink btn-sm" href="https://github.com/YASASWIP012/atomiq-quantum-campaign">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.38-5.26 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
+      Code
+    </a>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero hero--wash">
+  <div class="container">
+    <span class="badge"><span class="badge__tag">Qiskit</span>Atomiq Hackathon · Qiskit Fall Fest 2026 at IEM</span>
+    <h1>Six customers, one campaign. <span class="t-muted">Every quantum number checked.</span></h1>
+    <p class="lead">A three-stage Qiskit pipeline for a bank's term-deposit campaign: predict who will subscribe, pick six with a QAOA circuit that can only return valid picks, and estimate the chance that three of them say yes.</p>
+    <div class="cta-row">
+      <a class="btn btn-candy btn-lg" href="#try">Try the solver on this page</a>
+      <a class="btn btn-outline btn-lg" href="https://github.com/YASASWIP012/atomiq-quantum-campaign#readme">Read the technical report</a>
+    </div>
+    <div class="trust"><span>No login, no install</span><span>Numbers read from the committed result files</span><span>Reproduces with one command</span></div>
+
+    <div class="hero__visual bleed">
+      <div class="stage">
+        <div class="window" aria-label="Stage 2 answer: the ten candidates with the six selected customers highlighted">
+          <div class="window__bar"><div class="lights"><i></i><i></i><i></i></div><span class="window__title t-mono">stage2_selection.json</span></div>
+          <div style="padding:clamp(14px,2.4vw,24px)">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px">
+              <div><div class="eyebrow"><span class="dot"></span>Measured bitstring · qubit 0 on the right</div><div class="bits" id="hero-bits" style="margin-top:8px"></div></div>
+              <span class="status" id="hero-status">Feasible · 0.0% gap to brute force</span>
+            </div>
+            <div class="tbl-wrap"><table class="tbl" id="hero-table">
+              <thead><tr><th>Qubit</th><th>Customer</th><th class="num">p(subscribe)</th><th class="num">Deposit</th><th class="num">Cost</th><th class="num">Capacity</th><th class="num">Net value</th></tr></thead>
+              <tbody></tbody>
+            </table></div>
+          </div>
+        </div>
+        <div class="float" style="right:clamp(8px,3vw,40px);top:clamp(8px,2vw,24px)"><div><div class="t-micro">P(at least 3 of 6 subscribe)</div><div style="font:600 22px/1.2 var(--font-display)" id="hero-p3"></div><div class="t-micro" id="hero-p3-exact"></div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt after-bleed" id="answer">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>The answer</div>
+      <h2>What we submit, and where each number lives.</h2>
+    </div>
+    <div class="grid grid-3">
+      <div class="card stat reveal" style="--i:0">
+        <div class="stat__label">Customers to contact (Stage 2)</div>
+        <div class="ids" id="ans-ids"></div>
+        <div class="stat__label" id="ans-obj"></div>
+        <div class="stat__src"><a href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/stage2_selection.json">stage2_selection.json</a></div>
+      </div>
+      <div class="card stat reveal" style="--i:1">
+        <div class="stat__label">P(≥3 of 6 subscribe), quantum estimate</div>
+        <div class="stat__num" id="ans-p3"></div>
+        <div class="stat__label" id="ans-p3-sub"></div>
+        <div class="stat__src"><a href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/stage3_simulation.json">stage3_simulation.json</a></div>
+      </div>
+      <div class="card stat reveal" style="--i:2">
+        <div class="stat__label">QAOA returns the optimum</div>
+        <div class="stat__num" id="ans-qaoa"></div>
+        <div class="stat__label" id="ans-qaoa-sub"></div>
+        <div class="stat__src"><a href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/stage2_selection.json">depth_sweep · stage2_selection.json</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pipeline">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>Pipeline</div>
+      <h2>Three stages. One set of probabilities.</h2>
+      <p class="lead">Stage 1's probabilities flow unchanged into Stages 2 and 3. A 25-point checker fails the build if any ID or number drifts between files.</p>
+    </div>
+    <div class="stack">
+      <div class="split reveal">
+        <div>
+          <div class="eyebrow">Stage 1 · predict</div>
+          <h3>A quantum kernel, tuned so it isn't flat.</h3>
+          <p class="t-small">Six-qubit ZZ feature-map states feed a fidelity kernel and a projected kernel. At the default scaling, kernel values between customers bunch together, so we tune the bandwidth inside nested cross-validation (Shaydulin &amp; Wild, <a class="t-accent" href="https://arxiv.org/abs/2111.05451">arXiv:2111.05451</a>).</p>
+          <p class="t-small" id="s1-honest"></p>
+          <div class="chips"><span class="chip chip--soft">10 × 5 nested CV, train only</span><span class="chip chip--soft">Platt in-fold</span><span class="chip chip--soft">Rule committed before fitting</span></div>
+        </div>
+        <figure class="fig"><img src="figures/stage1_kernel_concentration.png" alt="Variance of off-diagonal kernel values peaks near bandwidth 0.06 and is about 70 times smaller at bandwidth 1" loading="lazy" width="830" height="540"><figcaption>Kernel spread collapses at the default bandwidth of 1.</figcaption></figure>
+      </div>
+      <div class="split split--flip reveal">
+        <div>
+          <div class="eyebrow">Stage 2 · select</div>
+          <h3>A circuit that can't break the six-customer rule.</h3>
+          <p class="t-small">QAOA starts in a Dicke state, an equal superposition of all 210 ways to choose six of ten, built gate by gate (Bärtschi &amp; Eidenbenz, <a class="t-accent" href="https://arxiv.org/abs/1904.07358">arXiv:1904.07358</a>). An XY ring mixer preserves the count. A presolve proves budget and capacity can't bind for these candidates, so the circuit needs 10 qubits and no penalty terms.</p>
+          <div class="chips"><span class="chip chip--soft">Gap to brute force: 0%</span><span class="chip chip--soft" id="s2-chip"></span><span class="chip chip--soft">Stress-tested with binding limits</span></div>
+        </div>
+        <figure class="fig"><img src="figures/stage2_qaoa_depth.png" alt="Probability of the brute-force optimum rises with QAOA depth for the Dicke plus XY ansatz and stays near zero for the penalty formulation" loading="lazy" width="1376" height="525"><figcaption>Constraint-native QAOA vs the usual penalty QUBO, ideal statevector.</figcaption></figure>
+      </div>
+      <div class="split reveal">
+        <div>
+          <div class="eyebrow">Stage 3 · simulate</div>
+          <h3>Six qubits, one question.</h3>
+          <p class="t-small">Each selected customer is one qubit, rotated so that it reads 1 with that customer's probability. A shot succeeds when at least three read 1. We compare the result with the exact Poisson-binomial value, Monte Carlo, an IBM Kingston noise model and two readout mitigations.</p>
+          <div class="chips"><span class="chip chip--soft">200,000 shots</span><span class="chip chip--soft">FakeKingston noise</span><span class="chip chip--soft">Tensored + M3 mitigation</span></div>
+        </div>
+        <figure class="fig"><img src="figures/stage3_estimates.png" alt="All Stage 3 estimates sit at about 0.062, close to the exact value; the Stage 1 bootstrap band runs from 0.011 to 0.200" loading="lazy" width="1024" height="544"><figcaption>Every estimator lands on the exact value; the orange band is Stage 1 uncertainty.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="try">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>Try it here</div>
+      <h2>Pick six yourself. <span class="t-muted">Then check the circuit.</span></h2>
+      <p class="lead">Both tools run in your browser on the submitted data. The page doesn't call anything; the Qiskit runs are in the repository.</p>
+    </div>
+
+    <div class="try">
+      <div class="card">
+        <div class="t-title">Stage 2: choose customers</div>
+        <p class="t-small" style="margin-top:6px">Select exactly six of the top ten. Feasibility and the gap to the brute-force optimum update as you go.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+          <button class="btn btn-ink btn-sm" id="pick-qaoa">Load QAOA answer</button>
+          <button class="btn btn-outline btn-sm" id="pick-clear">Clear</button>
+        </div>
+        <div style="margin-top:20px">
+          <div class="eyebrow">Most likely QAOA outcomes (p = <span id="qp"></span>)</div>
+          <div id="outcomes" style="margin-top:8px"></div>
+          <p class="note">Exact output distribution of the optimised circuit. Click an outcome to load it.</p>
+        </div>
+      </div>
+      <div class="stage stage--soft">
+        <div class="window">
+          <div class="window__bar"><div class="lights"><i></i><i></i><i></i></div><span class="window__title">Selection checker</span></div>
+          <div style="padding:clamp(14px,2.4vw,22px)">
+            <div class="cand" id="cand"></div>
+            <div class="readout">
+              <div><b id="r-count">0 / 6</b><span>selected</span></div>
+              <div><b id="r-budget">0 / 25</b><span>contact cost</span></div>
+              <div><b id="r-cap">0 / 22</b><span>capacity units</span></div>
+              <div><b id="r-obj">0.00</b><span>expected net value</span></div>
+            </div>
+            <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between">
+              <span class="status bad" id="r-status">Pick six customers</span>
+              <span class="t-micro" id="r-gap"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="try" style="margin-top:16px">
+      <div class="card">
+        <div class="t-title">Stage 3: sample the circuit</div>
+        <p class="t-small" style="margin-top:6px">Each slider is one qubit's probability of reading 1, starting at our Stage 1 values. Move them and the exact answer updates; press Measure to draw shots.</p>
+        <div id="sliders" style="display:grid;gap:10px;margin-top:16px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
+          <div class="segmented" role="group" aria-label="Shots">
+            <button aria-pressed="false" data-shots="1024">1,024</button><button aria-pressed="true" data-shots="8192">8,192</button><button aria-pressed="false" data-shots="200000">200k</button>
+          </div>
+          <button class="btn btn-candy btn-sm" id="measure">Measure</button>
+          <button class="btn btn-outline btn-sm" id="reset-p">Reset</button>
+        </div>
+      </div>
+      <div class="stage stage--soft">
+        <div class="window">
+          <div class="window__bar"><div class="lights"><i></i><i></i><i></i></div><span class="window__title">Successes per shot</span></div>
+          <div style="padding:clamp(14px,2.4vw,22px)">
+            <div class="readout" style="margin-top:0">
+              <div><b id="m-exact"></b><span>exact P(≥3)</span></div>
+              <div><b id="m-est">–</b><span>sampled P(≥3)</span></div>
+              <div><b id="m-se">–</b><span>± 1 s.e.</span></div>
+              <div><b id="m-shots">–</b><span>shots</span></div>
+            </div>
+            <div class="hist" id="hist" aria-label="Histogram of the number of qubits reading 1 per shot"></div>
+            <div class="legend"><span><i style="background:var(--accent)"></i>sampled</span><span><i style="background:var(--line-2)"></i>exact</span><span>blue labels count as success (≥3)</span></div>
+            <p class="note">Your browser samples the same product-state distribution the RY circuit produces. The Qiskit result (Aer, 200,000 shots, seed 7) is <span class="t-mono" id="m-qiskit"></span>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="evidence">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow"><span class="dot"></span>Evidence</div>
+      <h2>What holds up, and what doesn't.</h2>
+      <p class="lead">Negative results are reported as plainly as positive ones. Each claim links to the file it comes from.</p>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="t-title">Stage 1 cross-validation (300 customers, <span id="ev-pos"></span> positives)</div>
+        <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" id="cv-table">
+          <thead><tr><th>Model</th><th class="num">ROC-AUC</th><th class="num">PR-AUC</th><th class="num">Brier</th><th class="num">Log loss</th></tr></thead><tbody></tbody>
+        </table></div>
+        <p class="note" id="cv-note"></p>
+      </div>
+      <figure class="fig"><img src="figures/stage3_error_budget.png" alt="Stage 1 model uncertainty is about 0.049, shot noise 0.0017, noise bias 0.0027 and the residual after mitigation 0.0002" loading="lazy" width="1024" height="512"><figcaption id="eb-cap"></figcaption></figure>
+      <div class="card">
+        <div class="t-title">Stress test: limits tightened until they bind</div>
+        <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" id="stress-table">
+          <thead><tr><th>Scenario</th><th class="num">Feasible</th><th class="num">P(feasible) XY</th><th class="num">P(feasible) penalty</th><th class="num">Optimum sampled</th></tr></thead><tbody></tbody>
+        </table></div>
+        <p class="note">p = 2, 4,096 shots. Slack qubits and real ZZ couplings, checked against brute force. Source: <a class="t-accent" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/results/stage2_stress.json">results/stage2_stress.json</a>.</p>
+      </div>
+      <div class="card">
+        <div class="t-title">Noise and transpilation (IBM Kingston model)</div>
+        <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" id="noise-table"><tbody></tbody></table></div>
+        <p class="note">No real-QPU job was run for this submission. <span class="t-mono">scripts/run_hardware.py</span> is ready for one ibm_kingston job.</p>
+      </div>
+    </div>
+    <div class="grid grid-3" style="margin-top:16px">
+      <div class="tile reveal" style="--i:0"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></span><div><div class="t-title">Model error dominates</div><p id="t-dominate"></p></div></div>
+      <div class="tile reveal" style="--i:1"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/></svg></span><div><div class="t-title">The pick is fragile</div><p id="t-fragile"></p></div></div>
+      <div class="tile reveal" style="--i:2"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span><div><div class="t-title">Plain LR agrees</div><p id="t-lr"></p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--alt" id="reproduce">
+  <div class="container">
+    <div class="split">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>Reproduce</div>
+        <h3>One command, about five minutes.</h3>
+        <p class="t-small">Python 3.12. The organisers' dataset is in the repository, and every seed is listed in <span class="t-mono">src/atomiq/common.py</span>. CI reruns all three stages on each push and checks that the answer comes out the same.</p>
+        <div class="chips"><a class="chip" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/actions">CI runs</a><a class="chip" href="deck.pdf">Slide deck (PDF)</a><a class="chip" href="https://drive.google.com/file/d/1gyAnmR2OFbqoD_Thv0iyW7rwI3YuVDzm/view?usp=sharing">2-minute video</a><a class="chip" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/PREREGISTRATION.md">Pre-registration</a></div>
+      </div>
+      <pre class="code" aria-label="Commands to reproduce"><span class="c"># clone and run everything</span>
+git clone https://github.com/YASASWIP012/atomiq-quantum-campaign
+cd atomiq-quantum-campaign
+make setup     <span class="c"># .venv + pinned requirements</span>
+make all       <span class="c"># stage1 → stage2 → stage3 → tests → checks</span>
+
+<span class="c"># optional</span>
+make stress    <span class="c"># Stage 2 with binding limits</span>
+make hardware  <span class="c"># needs IBM_QUANTUM_TOKEN in .env</span></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2>Questions a judge might ask.</h2></div>
+    <div class="faq">
+      <details><summary>Does the quantum classifier beat logistic regression?</summary><p>No. With 35 positive examples the quantum kernels rank customers barely better than chance. The shipped blend is statistically level with logistic regression, and plain LR would have chosen the same six customers. The README reports this as a negative result.</p></details>
+      <details><summary>Isn't Stage 2 trivial once the constraints are redundant?</summary><p>Yes, sorting solves it. QAOA is what the task asks for, and we use it to show how a constraint-preserving ansatz behaves, ideal and noisy, against brute force. The stress test repeats the comparison with limits that bind, where slack qubits and ZZ terms come into play.</p></details>
+      <details><summary>Was any test information used?</summary><p>No. All preprocessing, tuning and calibration are fitted inside training folds, and the 100 test customers are predicted once by the final model. We never used the public UCI file the data was sampled from.</p></details>
+      <details><summary>Did anything change after the first results?</summary><p>Two things, both on training data only: a smaller set of categorical features and regularised Platt scaling. The earlier tables are kept in results/ and the README says why each change was made.</p></details>
+      <details><summary>Why not real hardware?</summary><p>We had no IBM Quantum key during the sprint. All noisy results come from the FakeKingston noise model, and the hardware script is ready for one job.</p></details>
+      <details><summary>Is there a quantum advantage here?</summary><p>No, and we don't claim one. Every problem in this pipeline is small enough to solve exactly on a laptop, which is how each quantum result is checked.</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <span style="display:flex;align-items:center;gap:10px"><svg class="app-icon" style="width:22px;height:22px" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#0F62FE"/><circle cx="16" cy="16" r="5" fill="none" stroke="#fff" stroke-width="2.4"/></svg>Six customers, one campaign · data from commit <span class="t-mono" id="commit"></span></span>
+    <span>Made by Yasaswi P for the Atomiq Hackathon · MIT licence · Qiskit is a trademark of IBM</span>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script>
+(() => {
+const D = window.ATOMIQ, C = D.candidates;
+const $ = s => document.querySelector(s), f = (x, d = 4) => Number(x).toFixed(d), pct = (x, d = 1) => (100 * x).toFixed(d) + '%';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const sel = new Set(D.selected);
+
+/* hero */
+$('#hero-bits').innerHTML = D.bitstring.split('').map(b => `<b class="${b === '1' ? 'on' : ''}">${b}</b>`).join('');
+$('#hero-table tbody').innerHTML = C.map(c => `<tr class="${sel.has(c.id) ? 'is-on' : ''}"><td class="mono">q${c.qubit}</td><td class="mono">${c.id}</td><td class="num">${f(c.p, 3)}</td><td class="num">${c.deposit}</td><td class="num">${c.cost}</td><td class="num">${c.cap}</td><td class="num">${f(c.v, 2)}</td></tr>`).join('');
+$('#hero-p3').textContent = f(D.stage3.quantum);
+$('#hero-p3-exact').textContent = 'exact ' + f(D.stage3.exact) + ' · 200,000 shots';
+
+/* answer */
+$('#ans-ids').innerHTML = D.selected.map(i => `<span class="id">${i}</span>`).join('');
+$('#ans-obj').textContent = `Expected net value ${f(D.objective, 3)} (the brute-force optimum). Cost ${D.budget[0]}/${D.budget[1]}, capacity ${D.capacity[0]}/${D.capacity[1]}.`;
+$('#ans-p3').textContent = f(D.stage3.quantum);
+$('#ans-p3-sub').textContent = `±${f(D.stage3.se)} (1 s.e.). Exact value ${f(D.stage3.exact)}. Stage 1 bootstrap band ${f(D.stage3.budget.bootstrap_p_ge3_ci95[0], 3)} to ${f(D.stage3.budget.bootstrap_p_ge3_ci95[1], 3)}.`;
+const ratio = D.qaoa.p_opt / D.qaoa.uniform;
+$('#ans-qaoa').textContent = Math.round(ratio) + '× more often';
+$('#ans-qaoa-sub').textContent = `than a uniform guess over the 210 valid subsets: ${pct(D.qaoa.p_opt)} of shots at depth ${D.qaoa.p}, against ${pct(D.qaoa.uniform, 2)}.`;
+$('#s2-chip').textContent = `P(optimum) ${pct(D.qaoa.p_opt)} at p = ${D.qaoa.p}`;
+
+/* stage 1 honest note + CV table */
+const cv = D.stage1.cv, lr = cv.find(r => r.model.startsWith('Logistic')), hy = cv.find(r => r.model.startsWith('Hybrid'));
+$('#s1-honest').textContent = `Result: logistic regression is the strongest single model (CV ROC-AUC ${f(lr.roc_auc, 3)}). The shipped blend puts weight ${f(D.stage1.w, 1)} on the quantum kernel and is statistically level with LR (${f(hy.roc_auc, 3)}). We report that as it is.`;
+$('#ev-pos').textContent = D.stage1.positives;
+$('#cv-table tbody').innerHTML = cv.map(r => `<tr class="${r.model.startsWith('Hybrid') ? 'is-on' : ''}"><td>${esc(r.model)}</td><td class="num">${f(r.roc_auc, 3)}</td><td class="num">${f(r.pr_auc, 3)}</td><td class="num">${f(r.brier, 4)}</td><td class="num">${f(r.log_loss, 3)}</td></tr>`).join('');
+$('#cv-note').innerHTML = `Mean over 50 outer folds. Hidden-label scores are unknown to us. Source: <a class="t-accent" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/results/stage1_cv_summary.csv">results/stage1_cv_summary.csv</a>.`;
+
+/* evidence */
+const B = D.stage3.budget;
+$('#eb-cap').textContent = `Bootstrap SD ${f(B.stage1_model_uncertainty_sd_bootstrap)} vs shot noise ${f(B.shot_noise_sd_ideal_200k)} at 200k shots.`;
+$('#t-dominate').textContent = `Retraining on resampled data moves P(≥3) by ${f(B.stage1_model_uncertainty_sd_bootstrap, 3)} (SD), about ${Math.round(B.stage1_model_uncertainty_sd_bootstrap / B.shot_noise_sd_ideal_200k)} times the shot noise.`;
+$('#t-fragile').textContent = `Across 200 bootstrap refits, on average ${f(D.stage3.stability.mean_overlap_with_our_6, 1)} of our six are chosen again. The top probabilities sit in a narrow band.`;
+$('#t-lr').textContent = `Plain logistic regression picks the same top 10 and the same six (rank correlation ${f(D.stage3.lr.rank_correlation_spearman, 3)}). Its P(≥3) would be ${f(D.stage3.lr.lr_p_ge3_exact, 3)}.`;
+$('#stress-table tbody').innerHTML = D.stress.map(s => {
+  const x = s.xy.find(r => r.p === 2), p = s.pen.find(r => r.p === 2);
+  return `<tr><td>${esc(s.name.split(': ')[1])}</td><td class="num">${s.feasible}/210</td><td class="num">${f(x.p_feasible, 2)}</td><td class="num">${f(p.p_feasible, 2)}</td><td class="num">${x.found_optimum_in_shots ? 'yes' : 'no'} / ${p.found_optimum_in_shots ? 'yes' : 'no'}</td></tr>`;
+}).join('');
+const N = D.qaoa.noisy, rows = D.stage3.rows;
+const r3 = m => rows.find(r => r.method === m);
+$('#noise-table tbody').innerHTML = [
+  ['Stage 2 circuit, p = ' + D.qaoa.p, `depth ${N.depth} · ${N.cz} CZ · ${N.swaps} SWAPs`],
+  ['Shots keeping exactly six', pct(N.keep_w6)],
+  ['P(optimum), raw / post-selected', `${pct(N.p_opt_raw)} / ${pct(N.p_opt_post)} (uniform ${pct(D.qaoa.uniform, 2)})`],
+  ['Stage 3 noisy, unmitigated', f(r3('aer_noisy_unmitigated').p)],
+  ['Stage 3 readout-mitigated', `${f(r3('aer_noisy_readout_mitigated').p)} (exact ${f(D.stage3.exact)})`],
+].map(([a, b]) => `<tr><td>${a}</td><td class="num">${b}</td></tr>`).join('');
+$('#commit').textContent = D.commit;
+
+/* Stage 2 picker */
+const best = Math.max(...D.qaoa.outcomes.map(o => o.objective));
+const optimum = D.optimum;
+const picked = new Set();
+$('#cand').innerHTML = C.map(c => `<button type="button" aria-pressed="false" data-id="${c.id}"><span class="cid">${c.id}</span><span class="cv">p ${f(c.p, 3)} · net ${f(c.v, 2)}</span><span class="cv">cost ${c.cost} · cap ${c.cap}</span></button>`).join('');
+function render2() {
+  document.querySelectorAll('#cand button').forEach(b => b.setAttribute('aria-pressed', picked.has(b.dataset.id)));
+  const ch = C.filter(c => picked.has(c.id));
+  const cost = ch.reduce((a, c) => a + c.cost, 0), cap = ch.reduce((a, c) => a + c.cap, 0), obj = ch.reduce((a, c) => a + c.v, 0);
+  $('#r-count').textContent = `${ch.length} / 6`; $('#r-budget').textContent = `${cost} / ${D.budget[1]}`;
+  $('#r-cap').textContent = `${cap} / ${D.capacity[1]}`; $('#r-obj').textContent = f(obj, 2);
+  const ok = ch.length === 6 && cost <= D.budget[1] && cap <= D.capacity[1];
+  const st = $('#r-status');
+  st.className = 'status' + (ok ? '' : ' bad');
+  st.textContent = ok ? (Math.abs(obj - optimum) < 1e-9 ? 'Feasible · this is the optimum' : 'Feasible') : (ch.length !== 6 ? `Pick ${6 - ch.length > 0 ? 6 - ch.length + ' more' : ch.length - 6 + ' fewer'}` : 'Over a limit');
+  $('#r-gap').textContent = ok ? `Gap to brute-force optimum ${f(optimum, 3)}: ${pct(Math.max(0, (optimum - obj) / optimum), 2)}` : '';
+}
+$('#cand').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; picked.has(b.dataset.id) ? picked.delete(b.dataset.id) : picked.add(b.dataset.id); render2(); });
+const load = ids => { picked.clear(); ids.forEach(i => picked.add(i)); render2(); };
+$('#pick-qaoa').onclick = () => load(D.selected);
+$('#pick-clear').onclick = () => load([]);
+$('#qp').textContent = D.qaoa.p;
+const maxp = D.qaoa.outcomes[0].p;
+$('#outcomes').innerHTML = D.qaoa.outcomes.slice(0, 6).map((o, i) => `<button type="button" class="outcome ${Math.abs(o.objective - optimum) < 1e-9 ? 'is-opt' : ''}" data-i="${i}"><span class="k">${o.key}</span><span class="t-micro">net ${f(o.objective, 2)}${Math.abs(o.objective - optimum) < 1e-9 ? ' · optimum' : ''}</span><span class="p">${pct(o.p)}</span><span class="bar"><i style="width:${100 * o.p / maxp}%"></i></span></button>`).join('');
+$('#outcomes').addEventListener('click', e => { const b = e.target.closest('.outcome'); if (b) load(D.qaoa.outcomes[+b.dataset.i].ids); });
+render2();
+
+/* Stage 3 sampler */
+const P0 = D.stage3.p.slice(), P = P0.slice(), IDS = D.stage3.ids;
+let shots = 8192;
+const pb = p => p.reduce((d, x) => { const n = new Array(d.length + 1).fill(0); d.forEach((v, k) => { n[k] += v * (1 - x); n[k + 1] += v * x; }); return n; }, [1]);
+$('#sliders').innerHTML = IDS.map((id, i) => `<label class="sl"><span class="t-mono">q${i} ${id.slice(-3)}</span><input class="range" type="range" min="0" max="1" step="0.005" value="${P[i]}" data-i="${i}" aria-label="Probability for ${id}"><span class="t-mono" id="pv${i}">${f(P[i], 3)}</span></label>`).join('');
+let last = null;
+function exact() { const d = pb(P); return { d, p3: d.slice(3).reduce((a, b) => a + b, 0) }; }
+function draw() {
+  const { d, p3 } = exact();
+  $('#m-exact').textContent = f(p3);
+  const m = Math.max(...d, ...(last ? last.map(x => x / last.n) : [0]));
+  $('#hist').innerHTML = d.map((v, k) => { const s = last ? last[k] / last.n : 0; return `<div class="col ${k >= 3 ? 'win' : ''}"><div class="bars"><div class="b1" style="height:${100 * s / m}%"></div><div class="b2" style="height:${100 * v / m}%"></div></div><span class="lab">${k}</span></div>`; }).join('');
+}
+function measure() {
+  const c = new Array(7).fill(0);
+  for (let s = 0; s < shots; s++) { let k = 0; for (let i = 0; i < 6; i++) if (Math.random() < P[i]) k++; c[k]++; }
+  c.n = shots; last = c;
+  const est = c.slice(3).reduce((a, b) => a + b, 0) / shots;
+  $('#m-est').textContent = f(est); $('#m-se').textContent = f(Math.sqrt(est * (1 - est) / shots)); $('#m-shots').textContent = shots.toLocaleString();
+  draw();
+}
+document.querySelectorAll('#sliders .range').forEach(r => {
+  const upd = () => { r.style.setProperty('--val', r.value * 100 + '%'); P[+r.dataset.i] = +r.value; $('#pv' + r.dataset.i).textContent = f(r.value, 3); last = null; ['#m-est', '#m-se', '#m-shots'].forEach(s => $(s).textContent = '–'); draw(); };
+  r.addEventListener('input', upd); r.style.setProperty('--val', r.value * 100 + '%');
+});
+document.querySelectorAll('.segmented button').forEach(b => b.onclick = () => { document.querySelectorAll('.segmented button').forEach(x => x.setAttribute('aria-pressed', x === b)); shots = +b.dataset.shots; });
+$('#measure').onclick = measure;
+$('#reset-p').onclick = () => { P0.forEach((v, i) => { const r = document.querySelector(`#sliders .range[data-i="${i}"]`); r.value = v; r.dispatchEvent(new Event('input')); }); };
+$('#m-qiskit').textContent = `${f(D.stage3.quantum)} ± ${f(D.stage3.se)}`;
+draw();
+})();
+
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+}else document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+</script>
+</body>
+</html>

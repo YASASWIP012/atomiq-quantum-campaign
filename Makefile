@@ -2,7 +2,7 @@
 PY ?= .venv/bin/python
 export PYTHONPATH := src
 
-.PHONY: setup all stage1 stage2 stage3 stress test check hardware clean
+.PHONY: setup all stage1 stage2 stage3 stress test check hardware site clean
 
 setup:
 	python3.12 -m venv .venv || uv venv --python 3.12 .venv
@@ -28,6 +28,9 @@ test:
 
 check:
 	$(PY) scripts/check_submission.py
+
+site:
+	$(PY) scripts/build_site.py
 
 hardware:   # optional, needs IBM_QUANTUM_TOKEN; then rerun `make stage2 stage3 check`
 	$(PY) scripts/run_hardware.py

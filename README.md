@@ -19,6 +19,8 @@ The last row matters most for the business reading. The probability that three o
 
 | What | Where |
 |---|---|
+| **Judges' page (no login): answer, live Stage 2 checker, Stage 3 sampler** | https://yasaswip012.github.io/atomiq-quantum-campaign/ |
+| CI (tests + full rerun on every push) | [![ci](https://github.com/YASASWIP012/atomiq-quantum-campaign/actions/workflows/ci.yml/badge.svg)](https://github.com/YASASWIP012/atomiq-quantum-campaign/actions/workflows/ci.yml) |
 | Slide deck (PDF, built from the result files) | [`presentation/deck.pdf`](presentation/deck.pdf) |
 | Video walkthrough (1 min 57 s) | [Google Drive](https://drive.google.com/file/d/1gyAnmR2OFbqoD_Thv0iyW7rwI3YuVDzm/view?usp=sharing) · same file in the repo: [`presentation/walkthrough.mp4`](presentation/walkthrough.mp4) (rebuilt from the result files by `scripts/make_video.py`) |
 | Result files | [`stage1_predictions.csv`](stage1_predictions.csv), [`stage2_selection.csv`](stage2_selection.csv) / [`.json`](stage2_selection.json), [`stage3_simulation.csv`](stage3_simulation.csv) / [`.json`](stage3_simulation.json) |
@@ -282,6 +284,7 @@ scripts/
   make_video.py               builds the narrated walkthrough video from the deck and live plots (ElevenLabs if a key is set, else the macOS voice)
   run_hardware.py             optional real-QPU job (ibm_kingston)
   make_deck.py                builds presentation/deck.pdf from the result files
+  build_site.py               builds the judges' page data (docs/) from the result files
 tests/                        25 tests: statevector equivalence, Dicke state, mixers, phase separator, fast simulator,
                               slack encoding, presolve soundness, QUBO ground state = brute force, Poisson-binomial,
                               gradient, readout inversion, bit order, tie-break
