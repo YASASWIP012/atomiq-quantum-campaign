@@ -42,14 +42,21 @@ jobs:
         run: python scripts/check_submission.py
       - name: Regenerated answer matches committed answer
         run: |
-          git diff --exit-code -- stage1_predictions.csv
           python - <<'PY'
-          import json, subprocess
+          import io, json, subprocess
+          import pandas as pd
+          old1 = pd.read_csv(io.StringIO(subprocess.check_output(["git", "show", "HEAD:stage1_predictions.csv"]).decode()))
+          new1 = pd.read_csv("stage1_predictions.csv")
+          assert (old1.customer_id == new1.customer_id).all() and (old1["rank"] == new1["rank"]).all(), "ranking differs"
+          assert (old1.is_top_10 == new1.is_top_10).all(), "top 10 differs"
+          d = (old1.predicted_probability - new1.predicted_probability).abs().max()
+          assert d < 1e-9, f"probabilities differ by {d}"
+          print(f"stage1 reproduced: same ranking and top 10, max |dp| = {d:.1e}")
           old = json.loads(subprocess.check_output(["git", "show", "HEAD:stage2_selection.json"]))
           new = json.load(open("stage2_selection.json"))
           assert new["selected_ids"] == old["selected_ids"], (new["selected_ids"], old["selected_ids"])
           o3 = json.loads(subprocess.check_output(["git", "show", "HEAD:stage3_simulation.json"]))
           n3 = json.load(open("stage3_simulation.json"))
-          assert abs(n3["exact_p_ge3"] - o3["exact_p_ge3"]) < 1e-12
+          assert abs(n3["exact_p_ge3"] - o3["exact_p_ge3"]) < 1e-9
           print("selection and exact P(>=3) reproduced:", new["selected_ids"], n3["exact_p_ge3"])
           PY

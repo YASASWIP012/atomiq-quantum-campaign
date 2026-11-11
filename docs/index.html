@@ -336,7 +336,7 @@ pre.code .c{color:#8D8D8D}
           <p class="t-small" id="s1-honest"></p>
           <div class="chips"><span class="chip chip--soft">10 × 5 nested CV, train only</span><span class="chip chip--soft">Platt in-fold</span><span class="chip chip--soft">Rule committed before fitting</span></div>
         </div>
-        <figure class="fig"><img src="figures/stage1_kernel_concentration.png" alt="Variance of off-diagonal kernel values peaks near bandwidth 0.06 and is about 70 times smaller at bandwidth 1" loading="lazy" width="830" height="540"><figcaption>Kernel spread collapses at the default bandwidth of 1.</figcaption></figure>
+        <figure class="fig"><img src="figures/stage1_kernel_concentration.png" alt="Variance of off-diagonal kernel values peaks near bandwidth 0.06 and is about 60 times smaller at bandwidth 1" loading="lazy" width="830" height="540"><figcaption>Kernel spread collapses at the default bandwidth of 1.</figcaption></figure>
       </div>
       <div class="split split--flip reveal">
         <div>
@@ -354,7 +354,7 @@ pre.code .c{color:#8D8D8D}
           <p class="t-small">Each selected customer is one qubit, rotated so that it reads 1 with that customer's probability. A shot succeeds when at least three read 1. We compare the result with the exact Poisson-binomial value, Monte Carlo, an IBM Kingston noise model and two readout mitigations. This stage is classically trivial; the circuit is a verifiable sampler of the stated model, nothing more.</p>
           <div class="chips"><span class="chip chip--soft">200,000 shots</span><span class="chip chip--soft">FakeKingston noise</span><span class="chip chip--soft">Tensored + M3 mitigation</span></div>
         </div>
-        <figure class="fig"><img src="figures/stage3_estimates.png" alt="All Stage 3 estimates sit at about 0.062, close to the exact value; the Stage 1 bootstrap band runs from 0.011 to 0.200" loading="lazy" width="1024" height="544"><figcaption>Ideal and mitigated estimates land within 0.0004 of exact; unmitigated noise adds 0.0027. The orange band is Stage 1 uncertainty.</figcaption></figure>
+        <figure class="fig"><img src="figures/stage3_estimates.png" alt="Stage 3 estimates from every method sit close to the exact value, inside a much wider Stage 1 bootstrap band" loading="lazy" width="1024" height="544"><figcaption id="s3-cap">The orange band is Stage 1 uncertainty.</figcaption></figure>
       </div>
     </div>
   </div>
@@ -450,7 +450,7 @@ pre.code .c{color:#8D8D8D}
         </table></div>
         <p class="note" id="cv-note"></p>
       </div>
-      <figure class="fig"><img src="figures/stage3_error_budget.png" alt="Stage 1 model uncertainty is about 0.049; shot noise at 20,000 shots 0.0017; noise bias 0.0027; residual after mitigation 0.0002" loading="lazy" width="1024" height="512"><figcaption id="eb-cap"></figcaption></figure>
+      <figure class="fig"><img src="figures/stage3_error_budget.png" alt="Bar chart: Stage 1 model uncertainty is far larger than shot noise, noise bias and the residual after mitigation" loading="lazy" width="1024" height="512"><figcaption id="eb-cap"></figcaption></figure>
       <div class="card">
         <div class="t-title">Stress test: limits tightened until they bind</div>
         <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" id="stress-table">
@@ -467,7 +467,7 @@ pre.code .c{color:#8D8D8D}
     <div class="grid grid-3" style="margin-top:16px">
       <div class="tile reveal" style="--i:0"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></span><div><div class="t-title">Model error dominates</div><p id="t-dominate"></p></div></div>
       <div class="tile reveal" style="--i:1"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/></svg></span><div><div class="t-title">The pick is fragile</div><p id="t-fragile"></p></div></div>
-      <div class="tile reveal" style="--i:2"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span><div><div class="t-title">Plain LR agrees</div><p id="t-lr"></p></div></div>
+      <div class="tile reveal" style="--i:2"><span class="icon-tile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/></svg></span><div><div class="t-title">Plain LR would pick differently</div><p id="t-lr"></p></div></div>
     </div>
   </div>
 </section>
@@ -498,10 +498,10 @@ make hardware  <span class="c"># needs IBM_QUANTUM_TOKEN in .env</span></pre>
   <div class="container">
     <div class="section-head"><h2>Questions a judge might ask.</h2></div>
     <div class="faq">
-      <details><summary>Does the quantum classifier beat logistic regression?</summary><p>No. With 35 positive examples the quantum kernels rank customers barely better than chance. The shipped blend is statistically level with logistic regression, and plain LR would have chosen the same six customers. The README reports this as a negative result.</p></details>
+      <details><summary>Does the quantum classifier beat logistic regression?</summary><p>No. With 35 positive examples the quantum kernels rank customers only a little better than chance, and the blend procedure is not distinguishable from logistic regression in cross-validation. The final blend puts weight 0.8 on the quantum kernel, so plain LR would pick a different six (2 in common), and we cannot tell from training data which list is better. The README reports all of this.</p></details>
       <details><summary>Isn't Stage 2 trivial once the constraints are redundant?</summary><p>Yes, sorting solves it. QAOA is what the task asks for, and we use it to show how a constraint-preserving ansatz behaves, ideal and noisy, against brute force. The stress test repeats the comparison with limits that bind, where slack qubits and ZZ terms come into play.</p></details>
       <details><summary>Was any test information used?</summary><p>No. All preprocessing, tuning and calibration are fitted inside training folds, and the 100 test customers are predicted once by the final model. We never used the public UCI file the data was sampled from.</p></details>
-      <details><summary>Did anything change after the first results?</summary><p>Two things, both on training data only: a smaller set of categorical features and regularised Platt scaling. The earlier tables are kept in results/ and the README says why each change was made.</p></details>
+      <details><summary>Did anything change after the first results?</summary><p>Three things, all on training data only: a smaller set of categorical features, regularised Platt scaling, and a fix that makes PCA signs identical on macOS and Linux. The last one changed our six customers; the README lists the earlier answer and why we kept the new one.</p></details>
       <details><summary>Why not real hardware?</summary><p>We had no IBM Quantum key during the sprint. All noisy results come from the FakeKingston noise model, and the hardware script is ready for one job.</p></details>
       <details><summary>Is there a quantum advantage here?</summary><p>No, and we don't claim one. Every problem in this pipeline is small enough to solve exactly on a laptop, which is how each quantum result is checked.</p></details>
     </div>
@@ -542,7 +542,7 @@ $('#s2-chip').textContent = `P(optimum) ${pct(D.qaoa.p_opt)} at p = ${D.qaoa.p}`
 
 /* stage 1 honest note + CV table */
 const cv = D.stage1.cv, lr = cv.find(r => r.model.startsWith('Logistic')), hy = cv.find(r => r.model.startsWith('Hybrid'));
-$('#s1-honest').textContent = `Result: logistic regression is the strongest single model (CV ROC-AUC ${f(lr.roc_auc, 3)}). The shipped blend puts weight ${f(D.stage1.w, 1)} on the quantum kernel and is not distinguishable from LR in cross-validation, with LR nominally ahead (ROC-AUC ${f(hy.roc_auc, 3)} vs ${f(lr.roc_auc, 3)}). We report that as it is.`;
+$('#s1-honest').textContent = `Result: logistic regression is the strongest single model (CV ROC-AUC ${f(lr.roc_auc, 3)}). The shipped blend procedure is not distinguishable from LR in cross-validation, with LR nominally ahead (ROC-AUC ${f(hy.roc_auc, 3)} vs ${f(lr.roc_auc, 3)}). The final refit put weight ${f(D.stage1.w, 1)} on the quantum kernel, high for this procedure. We report that as it is.`;
 $('#ev-pos').textContent = D.stage1.positives;
 $('#cv-table tbody').innerHTML = cv.map(r => `<tr class="${r.model.startsWith('Hybrid') ? 'is-on' : ''}"><td>${esc(r.model)}</td><td class="num">${f(r.roc_auc, 3)}</td><td class="num">${f(r.pr_auc, 3)}</td><td class="num">${f(r.brier, 4)}</td><td class="num">${f(r.log_loss, 3)}</td></tr>`).join('');
 $('#cv-note').innerHTML = `Mean over 50 outer folds. Hidden-label scores are unknown to us. Source: <a class="t-accent" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/results/stage1_cv_summary.csv">results/stage1_cv_summary.csv</a>.`;
@@ -552,7 +552,9 @@ const B = D.stage3.budget;
 $('#eb-cap').textContent = `Bootstrap SD ${f(B.stage1_model_uncertainty_sd_bootstrap)} vs shot noise ${f(B.shot_noise_sd_ideal_200k)} at 200k shots.`;
 $('#t-dominate').textContent = `Retraining on resampled data moves P(≥3) by ${f(B.stage1_model_uncertainty_sd_bootstrap, 3)} (SD), about ${Math.round(B.stage1_model_uncertainty_sd_bootstrap / B.shot_noise_sd_ideal_200k)} times the shot noise.`;
 $('#t-fragile').textContent = `Across 200 bootstrap refits, on average ${f(D.stage3.stability.mean_overlap_with_our_6, 1)} of our six are chosen again. The top probabilities sit in a narrow band.`;
-$('#t-lr').textContent = `Plain logistic regression picks the same top 10 and the same six (rank correlation ${f(D.stage3.lr.rank_correlation_spearman, 3)}). Its P(≥3) would be ${f(D.stage3.lr.lr_p_ge3_exact, 3)}.`;
+$('#t-lr').textContent = `Plain logistic regression shares ${D.stage3.lr.top10_overlap_with_ours} of our top 10 and ${D.stage3.lr.selection_overlap_with_ours} of our six (rank correlation ${f(D.stage3.lr.rank_correlation_spearman, 2)}). CV cannot say which list is better.`;
+const r3m = m => D.stage3.rows.find(r => r.method === m);
+$('#s3-cap').textContent = `Ideal and mitigated estimates land within ${f(Math.max(r3m('aer_ideal_finite_shots').err, r3m('aer_noisy_readout_mitigated').err), 4)} of exact; unmitigated noise adds ${f(r3m('aer_noisy_unmitigated').err, 4)}. The orange band is Stage 1 uncertainty.`;
 $('#stress-table tbody').innerHTML = D.stress.map(s => {
   const x = s.xy.find(r => r.p === 2), p = s.pen.find(r => r.p === 2);
   const u = 1 / s.feasible;

@@ -78,11 +78,11 @@ def main():
             f"Nested CV (10 x 5 folds, train only). ROC-AUC: LR {m('LR','roc_auc'):.3f}, quantum fidelity kernel "
             f"{m('QK','roc_auc'):.3f}, projected kernel {m('PQK','roc_auc'):.3f}, hybrid {m('Hybrid','roc_auc'):.3f}.",
             f"Brier: LR {m('LR','brier'):.4f}, hybrid {m('Hybrid','brier'):.4f}, constant prior {m('prior','brier'):.4f}.",
-            f"Pre-registered rule shipped: {s1['shipped_model']} (blend weight on the quantum model "
-            f"w = {s1['final_hyperparameters'].get('w', 0):.1f}). The quantum kernels alone do not beat LR here.",
+            f"Pre-registered rule shipped: {s1['shipped_model']} (final blend weight on the quantum kernel "
+            f"w = {s1['final_hyperparameters'].get('w', 0):.1f}; most CV folds chose 0 to 0.3). The quantum kernels alone do not beat LR.",
             "Why plain fidelity kernels fail: kernel values concentrate as bandwidth grows (right). We tune bandwidth inside CV.",
-            f"Plain LR would pick the same top 10 and the same six (rank correlation "
-            f"{s3['error_budget']['lr_only_counterfactual']['rank_correlation_spearman']:.3f}); the blend shifts calibration, not the decision.",
+            f"Plain LR shares {s3['error_budget']['lr_only_counterfactual']['selection_overlap_with_ours']} of our six "
+            f"(rank correlation {s3['error_budget']['lr_only_counterfactual']['rank_correlation_spearman']:.2f}); CV cannot say which list is better.",
         ], image="figures/stage1_kernel_concentration.png")
         f = s2["formulation"]
         slide(pdf, "Stage 2: constraint-native QAOA", [
@@ -92,8 +92,8 @@ def main():
             f"Uniform guess finds the optimum with p = {s2['random_feasible_baseline_p_optimal']:.4f}.",
             f"QAOA p={s2['qaoa']['best_p']}: P(optimum) = {s2['depth_sweep'][s2['qaoa']['best_p']]['p_optimal']:.3f}, "
             f"P(feasible) = {s2['depth_sweep'][s2['qaoa']['best_p']]['p_feasible']:.3f}.",
-            "Stress test with binding limits (slack qubits, real ZZ terms): 3 to 6 times more feasible shots than the "
-            "penalty QUBO; best sample = brute-force optimum in 13 of 14 runs.",
+            "Stress test with binding limits (slack qubits, real ZZ terms): 5 to 8 times more feasible shots than the "
+            "penalty QUBO, but P(optimum) beats a uniform feasible guess in only 1 of 3 scenarios.",
         ], image="figures/stage2_qaoa_depth.png")
         nz = s2["noisy_simulation"]
         k1 = str(s2["qaoa"]["best_p"])

@@ -160,7 +160,7 @@ def script() -> list[tuple[str, str]]:
                    "Every quantum result is checked against an exact classical answer."),
         ("slide3", "In stage one, default-scaled quantum kernels concentrate, so we tune their bandwidth. Even so, "
                    "with thirty-five positive examples they do not beat logistic regression, and we say so. "
-                   "A rule we fixed in advance ships a blend that is statistically level with it."),
+                   "A rule we fixed in advance ships a blend we cannot tell apart from it in cross-validation."),
         ("circuit", "In stage two, the circuit starts in a Dicke state: every way to choose six of ten customers at "
                     "once. An XY mixer keeps it there, so every shot obeys the exactly-six rule."),
         ("convergence", f"COBYLA tunes the angles. At depth {best}, the optimum shows up in {popt*100:.0f} percent of "
