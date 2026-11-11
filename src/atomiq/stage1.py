@@ -52,14 +52,18 @@ def _num_transform(df: pd.DataFrame) -> np.ndarray:
     out["contacted_before"] = (df["pdays"] >= 0).astype(float)
     out["pdays"] = np.log1p(out["pdays"].clip(lower=0))
     out["previous"] = np.log1p(out["previous"])
+    # Previous-campaign success converts 6/10 in train vs ~10% overall; as a lone one-hot level of a
+    # 10-row category it was shrunk away by L2. A dedicated scaled flag keeps it (change 4, README).
+    out["prev_success"] = (df["poutcome"] == "success").astype(float)
     return out.values
 
 
 def make_preprocessor() -> ColumnTransformer:
     return ColumnTransformer(
         [
-            ("num", Pipeline([("f", FunctionTransformer(_num_transform)), ("s", StandardScaler())]), NUM),
-            ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), CAT),
+            ("num", Pipeline([("f", FunctionTransformer(_num_transform)), ("s", StandardScaler())]), NUM + ["poutcome"]),
+            # One-hot columns are standardised too, so L2 treats rare and common levels alike.
+            ("cat", Pipeline([("o", OneHotEncoder(handle_unknown="ignore", sparse_output=False)), ("s", StandardScaler())]), CAT),
         ]
     )
 

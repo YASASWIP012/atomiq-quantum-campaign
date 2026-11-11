@@ -15,14 +15,14 @@ So the team needs three answers:
 
 | | Value | Where it comes from |
 |---|---|---|
-| Customers to contact (Stage 2) | **C0028, C0229, C0183, C0170, C0007, C0031** | `stage2_selection.json` |
-| P(at least 3 of 6 subscribe), quantum estimate (Stage 3) | **0.0441** ± 0.0005 (1 s.e., 200,000 shots) | `stage3_simulation.json` |
-| Exact value from the same probabilities | 0.0437 | Poisson-binomial |
-| Stage 2 optimality gap vs brute force | **0.0%** (4.170 vs 4.170) | all 210 subsets checked |
-| Budget / capacity used | 13 of 25 / 15 of 22 | |
-| Uncertainty carried in from Stage 1 | 95% bootstrap band 0.021 to 0.329 | 200 refits on resampled training data |
+| Customers to contact (Stage 2) | **C0031, C0081, C0079, C0087, C0397, C0374** | `stage2_selection.json` |
+| P(at least 3 of 6 subscribe), quantum estimate (Stage 3) | **0.1971** ± 0.0009 (1 s.e., 200,000 shots) | `stage3_simulation.json` |
+| Exact value from the same probabilities | 0.1969 | Poisson-binomial |
+| Stage 2 optimality gap vs brute force | **0.0%** (18.297 vs 18.297) | all 210 subsets checked |
+| Budget / capacity used | 13 of 25 / 10 of 22 | |
+| Uncertainty carried in from Stage 1 | 95% bootstrap band 0.059 to 0.456 | 200 refits on resampled training data |
 
-The last row matters most for the business reading. The probability that three of the six convert is low, and the estimate is only as good as a classifier trained on 35 positive examples. The quantum sampling error is about 180 times smaller than that model error.
+The last row matters most for the business reading. About one campaign in five reaches three sign-ups, and that estimate is only as good as a classifier trained on 35 positive examples. The quantum sampling error is about 110 times smaller than that model error.
 
 ## Proof it runs
 
@@ -65,7 +65,7 @@ None of this is a quantum advantage. Each problem here is small enough to solve 
 
 ```
 Stage1_Train (300, 35 yes) ──► nested CV ──► hybrid model ──► p_i for 100 test customers ──► top 10
-                                   (train only)   0.2·LR + 0.8·quantum kernel               │
+                                   (train only)   0.9·LR + 0.1·quantum kernel               │
                                                                                             ▼
           brute force (210 subsets) ◄── check ── Stage 2: Dicke(10,6) + XY-ring QAOA ──► 6 IDs
                                                                                             │
@@ -83,7 +83,7 @@ Stage 1 probabilities flow unchanged into Stages 2 and 3. `scripts/check_submiss
 
 ### Stage 1: subscription prediction
 
-**Data handling.** All preprocessing is fitted inside each training fold: a signed log transform for balance, logs of campaign, pdays and previous, a "contacted before" flag, standard scaling, and one-hot encoding of month, poutcome, contact, housing and loan. The test set is predicted once, at the end. The `duration` column is not in the release, which avoids the well-known leak in this dataset.
+**Data handling.** All preprocessing is fitted inside each training fold: a signed log transform for balance, logs of campaign, pdays and previous, a "contacted before" flag, a "previous campaign succeeded" flag, and standardised one-hot encoding of month, poutcome, contact, housing and loan. The test set is predicted once, at the end. The `duration` column is not in the release, which avoids the well-known leak in this dataset.
 
 **Quantum models.** Each customer becomes 6 angles (PCA fitted on the training fold, then standardised) times a bandwidth factor, encoded with the linear-entanglement `zz_feature_map(6, reps=2)`.
 
@@ -97,30 +97,31 @@ Stage 1 probabilities flow unchanged into Stages 2 and 3. `scripts/check_submiss
 
 ![kernel concentration](figures/stage1_kernel_concentration.png)
 
-Off-diagonal kernel variance peaks near bandwidth 0.06. At bandwidth 1 it is about 60 times smaller.
+Off-diagonal kernel variance peaks near bandwidth 0.06. At bandwidth 1 it is about 40 times smaller.
 
 **Model selection.** We ran 10 × repeated stratified 5-fold CV on the 300 training customers, with an inner 3-fold loop for every hyperparameter: LR strength, kernel bandwidth, kernel type, SVM C, and the blend weight w. The table gives the mean over 50 outer folds, with precision and recall at k = 10% of the fold.
 
 | Model | ROC-AUC | PR-AUC | Brier | Log loss | Precision@k | Recall@k |
 |---|---|---|---|---|---|---|
 | Constant prior | 0.500 | 0.117 | 0.1031 | 0.360 | 0.177 | 0.151 |
-| Logistic regression | **0.621** | **0.269** | **0.1016** | **0.357** | 0.207 | 0.177 |
-| Gradient boosting | 0.542 | 0.258 | 0.1098 | 0.410 | **0.250** | **0.214** |
-| Quantum fidelity kernel (QK) | 0.545 | 0.183 | 0.1049 | 0.370 | 0.110 | 0.094 |
-| Projected quantum kernel (PQK) | 0.518 | 0.174 | 0.1066 | 0.372 | 0.103 | 0.089 |
-| **Hybrid (shipped procedure)** | 0.603 | 0.243 | 0.1029 | 0.361 | 0.177 | 0.151 |
+| Logistic regression | **0.651** | **0.332** | **0.0965** | **0.340** | **0.277** | **0.237** |
+| Gradient boosting | 0.542 | 0.258 | 0.1098 | 0.410 | 0.250 | 0.214 |
+| Quantum fidelity kernel (QK) | 0.510 | 0.227 | 0.1033 | 0.363 | 0.180 | 0.154 |
+| Projected quantum kernel (PQK) | 0.497 | 0.184 | 0.1046 | 0.369 | 0.147 | 0.126 |
+| **Hybrid (shipped procedure)** | 0.649 | 0.330 | 0.0976 | 0.344 | **0.277** | **0.237** |
 
-The pre-registered rule is a non-inferiority test with no margin. It ships the hybrid when its log loss is no worse than LR's (paired 95% CI contains 0) and its PR-AUC is not clearly worse (CI upper bound ≥ 0). With 35 positives these intervals are wide, so the rule is lenient, and we say so. We used corrected resampled t intervals (Nadeau & Bengio, 2003). The hybrid's log-loss difference from LR is +0.004 [−0.013, +0.020], and its PR-AUC difference is −0.026 [−0.108, +0.056]. Both conditions hold, so the shipped model is the hybrid, refitted on all 300 customers. On the full training set the inner loop chose the fidelity kernel (bandwidth 0.1, C = 1) and a blend of **0.2 · LR + 0.8 · QK**. Inside the CV the inner loop picked the fidelity kernel in 28 of 50 folds and the projected kernel in 22, and the blend weight on the quantum model was usually small: 0 in 16 folds, 0.1 to 0.3 in 21, and 0.4 or more in 13. So the final weight of 0.8 sits at the high end of what the procedure produced, and the CV row above describes the procedure, not this exact weight.
+The pre-registered rule is a non-inferiority test with no margin. It ships the hybrid when its log loss is no worse than LR's (paired 95% CI contains 0) and its PR-AUC is not clearly worse (CI upper bound ≥ 0). With 35 positives these intervals are wide, so the rule is lenient, and we say so. We used corrected resampled t intervals (Nadeau & Bengio, 2003). The hybrid's log-loss difference from LR is +0.003 [−0.007, +0.013], and its PR-AUC difference is −0.002 [−0.014, +0.010]. Both conditions hold, so the shipped model is the hybrid, refitted on all 300 customers. On the full training set the inner loop chose the projected kernel (bandwidth 0.1, γ = 0.1, C = 0.1) and a blend of **0.9 · LR + 0.1 · PQK**. Inside the CV the blend weight on the quantum model was 0 in 30 of 50 folds, 0.1 to 0.3 in 14 and 0.4 or more in 6, so 0.1 is typical for the procedure.
 
-What this shows, stated plainly: on 300 rows with 35 positives, the quantum kernels on their own rank customers only a little better than chance, and the blend procedure is not distinguishable from logistic regression in CV, with LR nominally ahead on ROC-AUC and PR-AUC. Logistic regression is the strongest single model here. We report this as a negative result for the quantum classifier. The quantum component is in the shipped model because the rule we fixed in advance allows it.
+What this shows, stated plainly: on 300 rows with 35 positives, the quantum kernels on their own rank customers about as well as chance, and the blend is not distinguishable from logistic regression. Logistic regression is the strongest single model here. We report this as a negative result for the quantum classifier. The quantum component is in the shipped model, with a small weight, because the rule we fixed in advance allows it.
 
-**What plain LR would have done.** We also refitted LR alone on all 300 customers (`results/stage1_predictions_LR_only.csv`). Its ranking has a Spearman correlation of 0.71 with ours. Only 4 of its top 10 are in ours, and brute force on it picks C0031, C0256, C0028, C0338, C0088 and C0079, which shares 2 customers with our six. Under LR's probabilities, P(≥3) for its six would be 0.087. With a 0.8 weight on the quantum kernel the decision does change, and cross-validation cannot tell us which list is better on the hidden labels.
+**What plain LR would have done.** We also refitted LR alone on all 300 customers (`results/stage1_predictions_LR_only.csv`). Its ranking has a Spearman correlation of 0.999 with ours. It has the same top 10, and brute force on it picks the same six customers. Under LR's probabilities, P(≥3) for those six would be 0.222 instead of 0.197. So the quantum blend shifts the probabilities slightly and does not change the decision.
 
-**Changes made after the first run, and why.** The decision rule in `PREREGISTRATION.md` was committed before any model was fitted (see `git log`). After that commit we made two changes, both on training data only, and kept each earlier table in `results/`. The reported 0.621 for LR is therefore slightly optimistic, because the feature set was chosen on the same CV.
+**Changes made after the first run, and why.** The decision rule in `PREREGISTRATION.md` was committed before any model was fitted (see `git log`). After that commit we made four changes, all on training data only, and kept each earlier table in `results/`. The reported LR numbers are therefore somewhat optimistic, because features were chosen on the same CV.
 
 1. Dropping job, marital, education and default lifted LR's CV ROC-AUC from 0.605 to 0.621. The first-run table is `stage1_cv_summary_ablation_allcats.csv`.
 2. The first run used unregularised Platt scaling (C = 1e4). On inner folds with about four positives it became overconfident, and the quantum models' log loss reached 0.55 ± 0.84. Regularising it (C = 1) brought that to 0.367 ± 0.024. That table is `stage1_cv_summary_ablation_unregularised_platt.csv`. The decision rule did not change.
 3. Our CI reruns everything on Linux. The first such run produced a different top 10 from macOS: Linux LAPACK returned one PCA component with the opposite sign, and the ZZ feature map is not sign-symmetric, so the kernel changed. We now fix each component's sign by the skew of its training projections (a first attempt, "largest loading positive", still tied on one-hot pairs with exactly opposite loadings). We also round tuning scores to 6 decimals so exact ties break the same way everywhere. This fix changed our own answer: before it, the final blend was 0.7 · LR + 0.3 · PQK and the six were C0031, C0256, C0028, C0338, C0079 and C0088. We kept the new result because it is what the committed procedure produces once it is platform-independent.
+4. A blind review pointed out that the three test customers whose previous campaign succeeded got low probabilities (0.13 to 0.17), although that group subscribed 6 times out of 10 in training. Two things caused it. `poutcome = success` covers only 10 training rows, so L2 regularisation shrank its one-hot column toward zero. And the final blend at that time put weight 0.8 on a near-chance kernel. We added a "previous campaign succeeded" flag and standardised the one-hot columns, comparing variants on training-only CV. LR's CV PR-AUC rose from 0.269 to 0.332 and its Brier score improved from 0.1016 to 0.0965. The table before this change is `results/stage1_cv_summary_ablation_no_success_flag.csv`. The decision rule was not changed. This change also changed our six customers, from C0028, C0229, C0183, C0170, C0007, C0031 to the list at the top.
 
 ![reliability](figures/stage1_reliability.png)
 
@@ -128,7 +129,7 @@ What this shows, stated plainly: on 300 rows with 35 positives, the quantum kern
 
 **Problem.** Maximise Σᵢ (pᵢ · depositᵢ − costᵢ) xᵢ over the top 10, subject to Σ xᵢ = 6, Σ costᵢ xᵢ ≤ 25 and Σ capacityᵢ xᵢ ≤ 22.
 
-**Presolve: neither inequality can bind for our candidates.** The six most expensive candidates cost 21 in total, which is within the budget of 25. The six largest capacities add up to 17, which is within 22. So every subset of size six is feasible, and the budget and capacity constraints need no slack qubits and no penalty terms. The solver checks this in `presolve()`. If a different top 10 made either constraint binding, the code adds a bounded slack register and an equality penalty λ(capacity·x + s − 22)², where λ = 1 + Σ|vᵢ|/max|vᵢ| is larger than the whole objective range.
+**Presolve: neither inequality can bind for our candidates.** The six most expensive candidates cost 18 in total, which is within the budget of 25. The six largest capacities add up to 18, which is within 22. So every subset of size six is feasible, and the budget and capacity constraints need no slack qubits and no penalty terms. The solver checks this in `presolve()`. If a different top 10 made either constraint binding, the code adds a bounded slack register and an equality penalty λ(capacity·x + s − 22)², where λ = 1 + Σ|vᵢ|/max|vᵢ| is larger than the whole objective range.
 
 **Cardinality by construction.** We do not add a (Σx − 6)² penalty. The circuit starts in the Dicke state |D⁶₁₀⟩, an equal superposition of all 210 strings with six ones. It is prepared deterministically from CX, CRY and CCRY gates (Bärtschi & Eidenbenz 2019, arXiv:1904.07358), not with `initialize`, so it compiles for hardware. The mixer is exp(−iβ(XX + YY)/2) applied to the edges of a 10-qubit ring in two parity layers, and it preserves Hamming weight. Every sample therefore has exactly six ones. Tests check that the Dicke state is uniform over weight 6, that the mixer conserves weight, and that the RZ/RZZ phase separator matches the QUBO diagonal.
 
@@ -138,22 +139,22 @@ What this shows, stated plainly: on 300 rows with 35 positives, the quantum kern
 
 | Ansatz (ideal statevector) | p | P(feasible) | P(brute-force optimum) | Approx. ratio* |
 |---|---|---|---|---|
-| Dicke state only (uniform guess) | 0 | 1.000 | 0.0048 (= 1/210) | 0.165 |
-| Dicke + XY ring QAOA | 1 | 1.000 | 0.0869 | 0.672 |
-| Dicke + XY ring QAOA | 2 | 1.000 | 0.1351 | 0.753 |
-| **Dicke + XY ring QAOA** | **3** | **1.000** | **0.1473** | **0.733** |
-| Penalty QUBO + X mixer (common baseline) | 1 | 0.437 | 0.0123 | 0.396 |
-| Penalty QUBO + X mixer | 2 | 0.564 | 0.0178 | 0.560 |
+| Dicke state only (uniform guess) | 0 | 1.000 | 0.0048 (= 1/210) | 0.671 |
+| Dicke + XY ring QAOA | 1 | 1.000 | 0.0609 | 0.846 |
+| Dicke + XY ring QAOA | 2 | 1.000 | 0.0818 | 0.854 |
+| **Dicke + XY ring QAOA** | **3** | **1.000** | **0.1273** | **0.880** |
+| Penalty QUBO + X mixer (common baseline) | 1 | 0.384 | 0.0015 | 0.540 |
+| Penalty QUBO + X mixer | 2 | 0.348 | 0.0192 | 0.835 |
 
 ![qaoa depth](figures/stage2_qaoa_depth.png)
 
-\*Approx. ratio is the expected objective of feasible samples divided by the optimum. Five candidates have negative net value, so the ratio is not shift-invariant. Read it as a relative comparison only. Depth 3 was chosen because it has the highest P(optimum), even though its approximation ratio is slightly below depth 2.
+\*Approx. ratio is the expected objective of feasible samples divided by the optimum. One candidate has a negative net value, so the ratio is not shift-invariant. Read it as a relative comparison only.
 
-At p = 3 the circuit returns the optimum 31 times more often than uniform guessing. The usual penalty formulation wastes about half its shots on invalid strings. We sampled 4,096 shots (seed 5). The pre-registered rule takes the highest-objective feasible string among the samples. Here that is `1101101010` (578 shots), which decodes to the brute-force optimum.
+At p = 3 the circuit returns the optimum 27 times more often than uniform guessing. The usual penalty formulation wastes more than half its shots on invalid strings. We sampled 4,096 shots (seed 5). The pre-registered rule takes the highest-objective feasible string among the samples. Here that is `1010010111` (520 shots), which decodes to the brute-force optimum.
 
-**Decoding and bit order.** Qubit i is the i-th ranked candidate. Qiskit count keys are written with qubit 0 on the right, so `1101101010` reversed is 0,1,0,1,0,1,1,0,1,1. That gives qubits 1, 3, 5, 6, 8 and 9, which are C0028, C0229, C0183, C0170, C0007 and C0031. `tests/test_qaoa.py::test_bit_ordering_round_trip` pins this down.
+**Decoding and bit order.** Qubit i is the i-th ranked candidate. Qiskit count keys are written with qubit 0 on the right, so `1010010111` reversed is 1,1,1,0,1,0,0,1,0,1. That gives qubits 0, 1, 2, 4, 7 and 9, which are C0031, C0081, C0079, C0087, C0397 and C0374. `tests/test_qaoa.py::test_bit_ordering_round_trip` pins this down.
 
-**Close call.** The runner-up subset scores 4.005, which is 4.0% below the optimum. A model with slightly different probabilities can swap one customer, as the bootstrap below shows.
+**Close call.** The runner-up subset scores 17.639, which is 3.6% below the optimum. A model with slightly different probabilities can swap one customer, as the bootstrap below shows.
 
 #### Stress test: what happens when the constraints bind
 
@@ -161,38 +162,38 @@ On the real limits the cost layer has no ZZ terms, so the penalty and slack mach
 
 | Scenario | Feasible subsets | Qubits (slack) | ZZ terms | Ansatz | P(feasible) p=1 / 2 / 3 | P(optimum) p=1 / 2 / 3 | Best sample = optimum? |
 |---|---|---|---|---|---|---|---|
-| A: capacity ≤ 12 | 95 | 13 (3) | 78 | Dicke + XY | 0.641 / 0.776 / 0.432 | 0.003 / 0.001 / 0.004 | yes, all depths |
-| | | | | penalty + X | 0.094 / 0.094 / – | 0.004 / 0.005 / – | yes |
-| B: budget ≤ 15 | 76 | 12 (2) | 66 | Dicke + XY | 0.434 / 0.544 / 0.523 | 0.020 / 0.031 / 0.019 | yes, all depths |
-| | | | | penalty + X | 0.109 / 0.071 / – | 0.017 / 0.001 / – | yes |
-| C: budget ≤ 15, capacity ≤ 11 | 17 | 14 (4) | 87 | Dicke + XY | 0.053 / 0.075 / 0.087 | 0.006 / 0.008 / 0.011 | yes, all depths |
-| | | | | penalty + X | 0.014 / 0.016 / – | 0.001 / 0.001 / – | yes |
+| A: capacity ≤ 12 | 71 | 12 (2) | 66 | Dicke + XY | 0.308 / 0.271 / 0.329 | 0.0002 / 0.0004 / 0.0002 | p = 2 and 3 only |
+| | | | | penalty + X | 0.109 / 0.082 / – | 0.007 / 0.003 / – | yes |
+| B: budget ≤ 15 | 173 | 13 (3) | 78 | Dicke + XY | 0.904 / 0.910 / 0.916 | 0.010 / 0.007 / 0.008 | yes, all depths |
+| | | | | penalty + X | 0.178 / 0.222 / – | 0.0005 / 0.0005 / – | p = 1 only |
+| C: budget ≤ 15, capacity ≤ 11 | 37 | 15 (5) | 99 | Dicke + XY | 0.454 / 0.460 / 0.458 | 0.001 / 0.003 / 0.001 | yes, all depths |
+| | | | | penalty + X | 0.042 / 0.046 / – | 0.001 / 0.001 / – | yes |
 
 ![stress test](figures/stage2_stress.png)
 
 What we take from this:
 
-- Keeping the search inside the six-of-ten subspace leaves 5 to 8 times more probability on feasible strings than the standard penalty QUBO (at p = 2).
-- With 4,096 shots, the best feasible sample is the brute-force optimum in all 15 runs. With at most 210 candidate subsets that is a weak test, so we also report P(optimum).
-- P(optimum) is often below what you would get by sampling uniformly from the feasible set (1/95, 1/76 and 1/17 here). Only scenario B beats it, at every depth; A and C fall below it. COBYLA minimises the expected penalised cost, not P(optimum), and with large penalty terms those two objectives come apart. You would also need to know the feasible set to sample from it uniformly, which is the hard part. The fair baseline is the Dicke state itself (1/210 for the optimum).
-- Results depend on the penalty weight and on where the optimiser starts. Rerunning p = 2 from random starts at λ multipliers of 0.25 to 4 gives P(feasible) anywhere from 0.40 to 0.73 in scenario A, 0.31 to 0.61 in B and 0.04 to 0.11 in C (table in the JSON).
-- At p = 1 on FakeKingston the circuits need 812 to 868 two-qubit gates and 161 to 184 SWAPs. That is too deep for useful hardware results today.
+- Keeping the search inside the six-of-ten subspace leaves 3 to 10 times more probability on feasible strings than the standard penalty QUBO (at p = 2).
+- With 4,096 shots, the best feasible sample is the brute-force optimum in 13 of 15 runs. With at most 210 candidate subsets that is a weak test, so we also report P(optimum).
+- P(optimum) is often below what you would get by sampling uniformly from the feasible set (1/71, 1/173 and 1/37 here). Only scenario B beats it, at every depth; A and C fall below it, and in A the penalty QUBO does better. COBYLA minimises the expected penalised cost, not P(optimum), and with large penalty terms those two objectives come apart. You would also need to know the feasible set to sample from it uniformly, which is the hard part. The fair baseline is the Dicke state itself (1/210 for the optimum).
+- Results depend on the penalty weight and on where the optimiser starts. Rerunning p = 2 from random starts at λ multipliers of 0.25 to 4 gives P(feasible) anywhere from 0.49 to 0.59 in scenario A, 0.84 to 0.93 in B and 0.17 to 0.34 in C (table in the JSON).
+- At p = 1 on FakeKingston the circuits need 812 to 1,022 two-qubit gates and 161 to 202 SWAPs. That is too deep for useful hardware results today.
 
 ### Stage 3: chance of at least three conversions
 
-**Circuit.** One qubit per selected customer, in rank order (q0 = C0028 … q5 = C0031), with RY(θᵢ) and θᵢ = 2 arcsin √pᵢ, so P(qubit i reads 1) = pᵢ. There are no entangling gates, because the task assumes customers respond independently. A shot counts as a success when at least three qubits read 1. The angles and counts are in `stage3_simulation.json`.
+**Circuit.** One qubit per selected customer, in rank order (q0 = C0031 … q5 = C0374), with RY(θᵢ) and θᵢ = 2 arcsin √pᵢ, so P(qubit i reads 1) = pᵢ. There are no entangling gates, because the task assumes customers respond independently. A shot counts as a success when at least three qubits read 1. The angles and counts are in `stage3_simulation.json`.
 
 | Method | Backend | Shots | P(≥3) | \|error\| vs exact |
 |---|---|---|---|---|
-| Exact Poisson-binomial | classical | | 0.043662 | 0 |
-| Statevector | `qiskit.quantum_info` | | 0.043662 | 1e-17 |
-| **Finite shots, noiseless (reported)** | `AerSimulator`, seed 7 | 200,000 | **0.044055** | 0.00039 |
-| Monte Carlo | numpy, seed 99 | 10⁶ draws | 0.043692 | 0.00003 |
-| Noisy, unmitigated | `AerSimulator.from_backend(FakeKingston)` | 20,000 | 0.045800 | 0.00214 |
-| Noisy, tensored readout inversion | same + per-qubit assignment matrices | 20,000 | 0.043600 | 0.00006 |
-| Noisy, M3 | same + `mthree` 3.0 | 20,000 | 0.043759 | 0.00010 |
+| Exact Poisson-binomial | classical | | 0.196908 | 0 |
+| Statevector | `qiskit.quantum_info` | | 0.196908 | 6e-17 |
+| **Finite shots, noiseless (reported)** | `AerSimulator`, seed 7 | 200,000 | **0.197105** | 0.00020 |
+| Monte Carlo | numpy, seed 99 | 10⁶ draws | 0.196603 | 0.00031 |
+| Noisy, unmitigated | `AerSimulator.from_backend(FakeKingston)` | 20,000 | 0.199950 | 0.00304 |
+| Noisy, tensored readout inversion | same + per-qubit assignment matrices | 20,000 | 0.197245 | 0.00034 |
+| Noisy, M3 | same + `mthree` 3.0 | 20,000 | 0.197321 | 0.00041 |
 
-The reported estimate is 0.86 standard errors from the exact value, which is ordinary shot noise.
+The reported estimate is 0.22 standard errors from the exact value, which is ordinary shot noise.
 
 ![stage 3 estimates](figures/stage3_estimates.png)
 
@@ -202,20 +203,20 @@ All transpilation used `optimization_level=3` with `seed_transpiler=42`, targeti
 
 | Circuit | Logical qubits | Physical qubits | Depth before → after | 1Q gates | 2Q gates (CZ) | SWAPs |
 |---|---|---|---|---|---|---|
-| Stage 2, Dicke + XY QAOA, p = 1 | 10 | 10 | 395 → 1,268 | 2,082 | 580 | 107 |
-| Stage 2, Dicke + XY QAOA, p = 3 | 10 | 10 | 437 → 1,343 | 2,425 | 663 | 119 |
+| Stage 2, Dicke + XY QAOA, p = 1 | 10 | 10 | 395 → 1,268 | 2,080 | 580 | 107 |
+| Stage 2, Dicke + XY QAOA, p = 3 | 10 | 10 | 437 → 1,346 | 2,435 | 663 | 119 |
 | Stage 3, RY product state | 6 | 6 (10, 60, 23, 151, 21, 148) | 2 → 5 | 24 | 0 | 0 |
 
 Most of the Stage 2 two-qubit gates come from the Dicke preparation, which uses 30 CCRY gates, and from routing a ring onto heavy-hex. Under the FakeKingston noise model at p = 3:
 
-- 38.5% of shots keep Hamming weight 6. Noise leaks the rest out of the subspace.
-- Post-selecting on weight 6, a symmetry the ideal circuit guarantees, the optimum appears in 8.8% of kept shots. That is 18 times the uniform rate. Without post-selection the rate is 3.4%, which is 7 times uniform.
-- At p = 1 the noisy circuit gives 5.7% after post-selection (12 times uniform) against 8.7% in the ideal case.
+- 38.6% of shots keep Hamming weight 6. Noise leaks the rest out of the subspace.
+- Post-selecting on weight 6, a symmetry the ideal circuit guarantees, the optimum appears in 7.9% of kept shots. That is 17 times the uniform rate. Without post-selection the rate is 3.1%, which is 6 times uniform.
+- At p = 1 the noisy circuit gives 4.3% after post-selection (9 times uniform) against 6.1% in the ideal case.
 - The noisy runs reuse the angles optimised on the noiseless simulator. We did not re-optimise under noise.
 - Here every weight-6 string is feasible, so post-selecting on weight 6 is the same as keeping only feasible strings.
 - In both noisy runs the best feasible sampled string is still the brute-force optimum.
 
-The Stage 3 circuit has no two-qubit gates, so readout error dominates its noise. The unmitigated bias (0.0021) is about 1.4 standard errors of the 20,000-shot noise. After correcting with per-qubit assignment matrices measured on the same physical qubits, the residual (0.00006) is consistent with zero.
+The Stage 3 circuit has no two-qubit gates, so readout error dominates its noise. The unmitigated bias (0.0030) is about 1.1 standard errors of the 20,000-shot noise. After correcting with per-qubit assignment matrices measured on the same physical qubits, the residual (0.0003) is consistent with zero.
 
 **Real hardware.** [`scripts/run_hardware.py`](scripts/run_hardware.py) submits one job to `ibm_kingston` on the IBM Quantum Open Plan. The job holds the Stage 3 circuit, two readout-calibration circuits and the Stage 2 p = 1 circuit, run with dynamical decoupling and gate twirling at 4,000 shots each. It saves raw counts and the job ID to `results/`. `make stage2 stage3` then adds hardware rows to the result files. Not run for this submission: the run needs an IBM Quantum API key, which we did not have during the sprint. All noisy results above therefore come from the FakeKingston noise model.
 
@@ -225,25 +226,26 @@ We refitted the shipped Stage 1 model on 200 bootstrap resamples of the training
 
 | Source of error in P(≥3) | Size (SD or \|bias\|) |
 |---|---|
-| Stage 1 model uncertainty, bootstrap | **0.082** |
-| Stage 1 model uncertainty, delta method (∂P/∂pᵢ = P(other five have exactly 2) ≈ 0.13 each) | 0.047 |
-| Shot noise at 200,000 shots | 0.0005 |
-| Shot noise at 20,000 shots | 0.0014 |
-| Noise bias, FakeKingston, unmitigated | 0.0021 |
-| Residual after readout mitigation | 0.0001 |
+| Stage 1 model uncertainty, bootstrap | **0.100** |
+| Stage 1 model uncertainty, delta method (∂P/∂pᵢ = P(other five have exactly 2), 0.24 to 0.32) | 0.097 |
+| Shot noise at 200,000 shots | 0.0009 |
+| Shot noise at 20,000 shots | 0.0028 |
+| Noise bias, FakeKingston, unmitigated | 0.0030 |
+| Residual after readout mitigation | 0.0003 |
 
 ![error budget](figures/stage3_error_budget.png)
 
-The delta-method estimate is about 43% below the bootstrap value. The bootstrap distribution of P(≥3) is strongly right-skewed (95% band 0.021 to 0.329 around 0.044), and a first-order expansion misses that skew. The bootstrap keeps the final hyperparameters fixed, so both figures somewhat understate model uncertainty.
+The delta-method estimate is within 3% of the bootstrap value (95% bootstrap band 0.059 to 0.456 around 0.197). The bootstrap keeps the final hyperparameters fixed, so both figures somewhat understate model uncertainty.
 
-**Selection stability.** We repeated ranking and brute-force selection for each bootstrap replicate. The top 10 never came out exactly the same, and on average 1.2 of our 6 customers were chosen again (distribution of overlap: 0 in 35 replicates, 1 in 95, 2 in 61, 3 in 9). The predicted probabilities for the top 25 customers sit in a narrow band (0.13 to 0.17), so small model changes reorder them. This is the largest weakness in the pipeline. It comes from the data, not from the quantum steps.
+**Selection stability.** We repeated ranking and brute-force selection for each bootstrap replicate. On average 3.5 of our 6 customers were chosen again (distribution of overlap: 0 in 3 replicates, 1 in 3, 2 in 18, 3 in 73, 4 in 80, 5 in 22, 6 in 1). The three customers with a previous campaign success stand out at 0.29 to 0.49; below them the probabilities sit in a narrow band (0.13 to 0.21), so small model changes reorder the rest of the list. That instability comes from the data, not from the quantum steps.
 
 ## Business reading
 
-- Calling C0028, C0229, C0183, C0170, C0007 and C0031 gives the highest expected net value under our model: 4.17 deposit units (expected deposits of 17.17 minus contact costs of 13), using 15 capacity units.
-- Three or more subscriptions from six calls has about a 4% chance; the most likely outcomes are one subscription (40%) or none (39%). If the campaign target really is three subscribers, six calls are not enough. Going down our ranked list, the chance of three or more reaches 50% at about 19 calls (49% at 18, 56% at 20).
-- The ranking is weak (CV ROC-AUC about 0.6). Treat this list as a reasonable first wave and record outcomes, so the next model has more than 35 positives to learn from.
-- Neither budget nor capacity is the bottleneck for this candidate pool: 12 of 25 budget and 7 of 22 capacity units remain unused. The limit is the six-call cap.
+- Calling C0031, C0081, C0079, C0087, C0397 and C0374 gives the highest expected net value under our model: 18.30 deposit units (expected deposits of 31.30 minus contact costs of 13), using 10 capacity units.
+- Start with the three customers whose previous campaign succeeded (C0031, C0081, C0079). They carry most of the expected value.
+- Three or more subscriptions from six calls has about a 20% chance; the most likely outcomes are one subscription (34%) or two (33%). If the campaign target really is three subscribers, six calls are not enough. Going down our ranked list, the chance of three or more reaches 50% at about 12 calls (46% at 11, 51% at 12).
+- The ranking is modest (CV ROC-AUC about 0.65). Treat this list as a reasonable first wave and record outcomes, so the next model has more than 35 positives to learn from.
+- Neither budget nor capacity is the bottleneck for this candidate pool: 12 of 25 budget and 12 of 22 capacity units remain unused. The limit is the six-call cap.
 
 ## Limits
 

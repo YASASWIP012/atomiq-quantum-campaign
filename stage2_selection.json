@@ -1,63 +1,63 @@
 {
   "candidate_ids_top10": [
+    "C0031",
     "C0081",
-    "C0028",
-    "C0046",
-    "C0229",
-    "C0378",
+    "C0079",
     "C0183",
-    "C0170",
-    "C0134",
-    "C0007",
-    "C0031"
+    "C0087",
+    "C0318",
+    "C0265",
+    "C0397",
+    "C0359",
+    "C0374"
   ],
   "qubit_to_customer": {
-    "0": "C0081",
-    "1": "C0028",
-    "2": "C0046",
-    "3": "C0229",
-    "4": "C0378",
-    "5": "C0183",
-    "6": "C0170",
-    "7": "C0134",
-    "8": "C0007",
-    "9": "C0031"
+    "0": "C0031",
+    "1": "C0081",
+    "2": "C0079",
+    "3": "C0183",
+    "4": "C0087",
+    "5": "C0318",
+    "6": "C0265",
+    "7": "C0397",
+    "8": "C0359",
+    "9": "C0374"
   },
   "selected_ids": [
-    "C0028",
-    "C0229",
-    "C0183",
-    "C0170",
-    "C0007",
-    "C0031"
+    "C0031",
+    "C0081",
+    "C0079",
+    "C0087",
+    "C0397",
+    "C0374"
   ],
-  "selected_bitstring_qiskit_order": "1101101010",
+  "selected_bitstring_qiskit_order": "1010010111",
   "selected_bitstring_note": "Qiskit big-endian key; rightmost character is qubit 0 = rank-1 candidate",
   "total_budget_used": 13,
   "budget_limit": 25,
-  "total_capacity_used": 15,
+  "total_capacity_used": 10,
   "capacity_limit": 22,
-  "objective_value": 4.16976930565333,
+  "objective_value": 18.297208286415724,
   "brute_force_optimal_ids": [
-    "C0028",
-    "C0229",
-    "C0183",
-    "C0170",
-    "C0007",
-    "C0031"
+    "C0031",
+    "C0081",
+    "C0079",
+    "C0087",
+    "C0397",
+    "C0374"
   ],
-  "brute_force_optimal_objective": 4.16976930565333,
+  "brute_force_optimal_objective": 18.297208286415724,
   "optimality_gap": 0.0,
   "feasible": true,
   "solver": "constraint-native QAOA p=3 (Dicke + XY ring), statevector, 4096 shots",
   "presolve": {
     "budget_limit": 25,
     "capacity_limit": 22,
-    "max_budget_any_6": 21,
-    "min_budget_any_6": 12,
+    "max_budget_any_6": 18,
+    "min_budget_any_6": 9,
     "budget_redundant": true,
-    "max_capacity_any_6": 17,
-    "min_capacity_any_6": 8,
+    "max_capacity_any_6": 18,
+    "min_capacity_any_6": 9,
     "capacity_redundant": true
   },
   "formulation": {
@@ -65,33 +65,33 @@
     "cardinality": "enforced exactly by Dicke(10,6) initial state + Hamming-weight-preserving XY ring mixer (no penalty, no slack)",
     "budget": "redundant: the 6 most expensive candidates cost <= 25 (presolve proof)",
     "capacity": "redundant (presolve)",
-    "penalty_weight_lambda": 4.5449084369632455,
-    "objective_scale": 2.1362502789413886,
+    "penalty_weight_lambda": 5.867549050668988,
+    "objective_scale": 4.338900350846911,
     "lambda_rule": "lam = 1 + sum_i |v_i|/max|v|: any violation costs more than the whole objective range",
     "ising_h": [
-      -0.25331038440064524,
-      0.06226982486748855,
-      -0.08329513258772292,
-      0.03781137839173369,
-      -0.22622870138940201,
-      0.0009911322307919203,
       0.5,
-      -0.1443915841377142,
-      0.419519492292319,
-      -0.04463658818380536
+      0.22413852621344627,
+      0.4633436228446976,
+      0.10337258277199103,
+      0.2854133795387926,
+      0.049889656747323034,
+      -0.03824969626107596,
+      0.4260515346111481,
+      0.13375504076420255,
+      0.2095604855818163
     ],
     "ising_J": {},
-    "ising_offset": -0.2687294370830434
+    "ising_offset": -2.3572751328123416
   },
   "qaoa": {
     "best_p": 3,
     "optimised_params_beta_then_gamma": [
-      2.544874209487844,
-      -0.17074188003782584,
-      3.015707958275571,
-      1.4448923520291046,
-      2.2015189063682743,
-      1.7914776169240003
+      2.3050429735109033,
+      2.4730959396956855,
+      2.6890876493758653,
+      1.6299026649519737,
+      3.025587882769722,
+      3.5702323665521725
     ],
     "optimizer": "COBYLA, 4 random restarts + INTERP warm start",
     "seed": 31
@@ -102,60 +102,60 @@
       "ansatz": "Dicke only (uniform over 210)",
       "p_feasible": 1.0000000000000004,
       "p_hamming_weight_6": 1.0000000000000004,
-      "p_optimal": 0.004761904761904766,
-      "expected_objective_feasible_only": 0.6888880019140965,
-      "approx_ratio": 0.1652100995084091
+      "p_optimal": 0.004761904761904769,
+      "expected_objective_feasible_only": 12.273578280962601,
+      "approx_ratio": 0.6707896685023143
     },
     {
       "p": 1,
       "ansatz": "Dicke + XY ring",
-      "energy": -1.3108809651227737,
+      "energy": -3.5657940162379065,
       "params": [
-        2.6283565488989207,
-        1.589949661686082
+        2.629204036067005,
+        2.2916059004313554
       ],
-      "n_evals": 81,
-      "p_feasible": 1.0000000000000009,
-      "p_hamming_weight_6": 1.0000000000000009,
-      "p_optimal": 0.08689393926695203,
-      "expected_objective_feasible_only": 2.8003698274024797,
-      "approx_ratio": 0.671588671249934
+      "n_evals": 95,
+      "p_feasible": 1.0000000000000004,
+      "p_hamming_weight_6": 1.0000000000000004,
+      "p_optimal": 0.060907267518080975,
+      "expected_objective_feasible_only": 15.471624908102463,
+      "approx_ratio": 0.8455729784520712
     },
     {
       "p": 2,
       "ansatz": "Dicke + XY ring",
-      "energy": -1.469012386590896,
+      "energy": -3.602870242763344,
       "params": [
-        0.39460694911908845,
-        2.9169260439314346,
-        -1.8335552488565277,
-        3.615711905112797
+        2.593339228153401,
+        2.9795856985280755,
+        1.839642150691668,
+        2.9501396044461647
       ],
       "n_evals": 500,
-      "p_feasible": 1.0000000000000013,
-      "p_hamming_weight_6": 1.0000000000000013,
-      "p_optimal": 0.13510062618070007,
-      "expected_objective_feasible_only": 3.1381781206231523,
-      "approx_ratio": 0.7526023361456575
+      "p_feasible": 1.0000000000000009,
+      "p_hamming_weight_6": 1.0000000000000009,
+      "p_optimal": 0.08180735836160502,
+      "expected_objective_feasible_only": 15.63249496038175,
+      "approx_ratio": 0.854365032942631
     },
     {
       "p": 3,
       "ansatz": "Dicke + XY ring",
-      "energy": -1.4315722767337933,
+      "energy": -3.709305340011156,
       "params": [
-        2.544874209487844,
-        -0.17074188003782584,
-        3.015707958275571,
-        1.4448923520291046,
-        2.2015189063682743,
-        1.7914776169240003
+        2.3050429735109033,
+        2.4730959396956855,
+        2.6890876493758653,
+        1.6299026649519737,
+        3.025587882769722,
+        3.5702323665521725
       ],
       "n_evals": 750,
-      "p_feasible": 1.0000000000000018,
-      "p_hamming_weight_6": 1.0000000000000018,
-      "p_optimal": 0.14734416318012034,
-      "expected_objective_feasible_only": 3.05819667549732,
-      "approx_ratio": 0.7334210723243247
+      "p_feasible": 1.0000000000000007,
+      "p_hamming_weight_6": 1.0000000000000007,
+      "p_optimal": 0.12734018806095396,
+      "expected_objective_feasible_only": 16.094306241172713,
+      "approx_ratio": 0.8796044724003882
     }
   ],
   "penalty_baseline": [
@@ -163,58 +163,58 @@
       "p": 1,
       "ansatz": "penalty QUBO + X mixer",
       "params": [
-        0.3520444015182409,
-        2.12618402745343
+        1.9759266286212094,
+        3.2623536415067727
       ],
-      "p_feasible": 0.4365571661241202,
-      "p_hamming_weight_6": 0.4365571661241202,
-      "p_optimal": 0.012316178527680294,
-      "expected_objective_feasible_only": 1.6520219559456137,
-      "approx_ratio": 0.3961902529489628
+      "p_feasible": 0.3844226441438163,
+      "p_hamming_weight_6": 0.3844226441438163,
+      "p_optimal": 0.001469778283356548,
+      "expected_objective_feasible_only": 9.877519271407355,
+      "approx_ratio": 0.539837505087629
     },
     {
       "p": 2,
       "ansatz": "penalty QUBO + X mixer",
       "params": [
-        0.47770246942467853,
-        0.20273375784680234,
-        2.1072022922458267,
-        2.0226561403631016
+        0.5895635587064969,
+        1.7197856293805605,
+        1.0592124918704986,
+        0.42098776453135633
       ],
-      "p_feasible": 0.5643453254216098,
-      "p_hamming_weight_6": 0.5643453254216098,
-      "p_optimal": 0.01784312202754546,
-      "expected_objective_feasible_only": 2.335967304005739,
-      "approx_ratio": 0.5602149981867484
+      "p_feasible": 0.348427709883713,
+      "p_hamming_weight_6": 0.348427709883713,
+      "p_optimal": 0.01923311450375717,
+      "expected_objective_feasible_only": 15.28565517961062,
+      "approx_ratio": 0.8354091476872485
     }
   ],
   "random_feasible_baseline_p_optimal": 0.004761904761904762,
-  "dicke_only_baseline_p_optimal": 0.004761904761904766,
+  "dicke_only_baseline_p_optimal": 0.004761904761904769,
   "measured_counts_top20": {
-    "1101101010": 578,
-    "0111101010": 393,
-    "0101101110": 391,
-    "0101111010": 308,
-    "1001101110": 191,
-    "1101001110": 189,
-    "1101101100": 144,
-    "1111001010": 142,
-    "1101100110": 113,
-    "1111100100": 90,
-    "0001111110": 73,
-    "1001111010": 62,
-    "1111100010": 62,
-    "1101010110": 61,
-    "0111100110": 58,
-    "1111101000": 56,
-    "1100101110": 55,
-    "1101001011": 54,
-    "0111111000": 52,
-    "1101111000": 45
+    "1010010111": 520,
+    "1110010101": 494,
+    "1010110101": 382,
+    "0110010111": 259,
+    "1010011101": 223,
+    "1010001111": 201,
+    "1110001101": 158,
+    "1010101101": 149,
+    "0010111101": 130,
+    "1110100101": 105,
+    "1011010101": 94,
+    "0110001111": 69,
+    "0010110111": 64,
+    "0100011111": 64,
+    "0011110101": 60,
+    "1110110001": 57,
+    "0010101111": 55,
+    "1010100111": 46,
+    "0100110111": 37,
+    "0010011111": 34
   },
   "best_sampled": {
-    "bitstring": "1101101010",
-    "count": 578
+    "bitstring": "1010010111",
+    "count": 520
   },
   "noisy_simulation": {
     "1": {
@@ -236,14 +236,14 @@
         "original_depth": 395,
         "original_2q_gates": 356,
         "transpiled_depth": 1268,
-        "transpiled_1q_gates": 2082,
+        "transpiled_1q_gates": 2080,
         "transpiled_2q_gates": 580,
         "swap_count": 107,
         "basis_ops": {
           "sx": 1153,
-          "rz": 822,
+          "rz": 818,
           "cz": 580,
-          "x": 107,
+          "x": 109,
           "measure": 10,
           "barrier": 1
         },
@@ -252,15 +252,15 @@
         "backend": "fake_kingston"
       },
       "raw": {
-        "p_feasible": 0.43017578125,
-        "p_hamming_weight_6": 0.43017578125,
-        "p_optimal": 0.024658203125
+        "p_feasible": 0.441650390625,
+        "p_hamming_weight_6": 0.441650390625,
+        "p_optimal": 0.01904296875
       },
       "postselected_weight6": {
         "p_feasible_given_weight6": 1.0,
-        "p_optimal_given_weight6": 0.05732122587968218
+        "p_optimal_given_weight6": 0.04311774461028192
       },
-      "best_feasible_sampled_objective": 4.16976930565333,
+      "best_feasible_sampled_objective": 18.297208286415724,
       "finds_optimum": true,
       "noise_model": "AerSimulator.from_backend(FakeKingston)",
       "shots": 4096,
@@ -284,15 +284,15 @@
         ],
         "original_depth": 437,
         "original_2q_gates": 396,
-        "transpiled_depth": 1343,
-        "transpiled_1q_gates": 2425,
+        "transpiled_depth": 1346,
+        "transpiled_1q_gates": 2435,
         "transpiled_2q_gates": 663,
         "swap_count": 119,
         "basis_ops": {
           "sx": 1365,
-          "rz": 955,
+          "rz": 967,
           "cz": 663,
-          "x": 105,
+          "x": 103,
           "measure": 10,
           "barrier": 1
         },
@@ -301,15 +301,15 @@
         "backend": "fake_kingston"
       },
       "raw": {
-        "p_feasible": 0.385009765625,
-        "p_hamming_weight_6": 0.385009765625,
-        "p_optimal": 0.033935546875
+        "p_feasible": 0.3857421875,
+        "p_hamming_weight_6": 0.3857421875,
+        "p_optimal": 0.030517578125
       },
       "postselected_weight6": {
         "p_feasible_given_weight6": 1.0,
-        "p_optimal_given_weight6": 0.08814204185161699
+        "p_optimal_given_weight6": 0.07911392405063292
       },
-      "best_feasible_sampled_objective": 4.16976930565333,
+      "best_feasible_sampled_objective": 18.297208286415724,
       "finds_optimum": true,
       "noise_model": "AerSimulator.from_backend(FakeKingston)",
       "shots": 4096,
@@ -319,5 +319,5 @@
   "ibm_hardware": null,
   "n_feasible_subsets": 210,
   "n_cardinality_subsets": 210,
-  "runtime_s": 381.3
+  "runtime_s": 195.4
 }
