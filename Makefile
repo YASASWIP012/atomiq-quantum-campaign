@@ -2,7 +2,7 @@
 PY ?= .venv/bin/python
 export PYTHONPATH := src
 
-.PHONY: setup all stage1 stage2 stage3 test check hardware clean
+.PHONY: setup all stage1 stage2 stage3 stress test check hardware clean
 
 setup:
 	python3.12 -m venv .venv || uv venv --python 3.12 .venv
@@ -19,6 +19,9 @@ stage2:
 
 stage3:
 	$(PY) -m atomiq.stage3
+
+stress:
+	$(PY) -m atomiq.stage2_stress
 
 test:
 	$(PY) -m pytest -q

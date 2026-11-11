@@ -43,13 +43,13 @@ def load_candidates() -> pd.DataFrame:
     return cand
 
 
-def brute_force(c: pd.DataFrame) -> dict:
+def brute_force(c: pd.DataFrame, budget: int = BUDGET, capacity: int = CAPACITY) -> dict:
     v, cost, cap = c.expected_net_value.values, c.contact_cost.values, c.capacity_units.values
     rows = []
     for combo in itertools.combinations(range(N_CANDIDATES), K_SELECT):
         x = np.zeros(N_CANDIDATES, int)
         x[list(combo)] = 1
-        rows.append((x, v @ x, cost @ x, cap @ x, cost @ x <= BUDGET and cap @ x <= CAPACITY))
+        rows.append((x, v @ x, cost @ x, cap @ x, cost @ x <= budget and cap @ x <= capacity))
     feas = [r for r in rows if r[4]]
     best = max(feas, key=lambda r: r[1])
     ranked = sorted(feas, key=lambda r: -r[1])
@@ -61,46 +61,70 @@ def brute_force(c: pd.DataFrame) -> dict:
     }
 
 
-def presolve(c: pd.DataFrame) -> dict:
+def presolve(c: pd.DataFrame, budget: int = BUDGET, capacity: int = CAPACITY) -> dict:
+    """An inequality can never bind if even the 6 largest coefficients fit under the limit."""
     cost, cap = np.sort(c.contact_cost.values), np.sort(c.capacity_units.values)
-    max_cost6, max_cap6, min_cap6 = cost[-K_SELECT:].sum(), cap[-K_SELECT:].sum(), cap[:K_SELECT].sum()
     return {
-        "max_budget_any_6": int(max_cost6), "budget_redundant": bool(max_cost6 <= BUDGET),
-        "max_capacity_any_6": int(max_cap6), "min_capacity_any_6": int(min_cap6),
-        "capacity_redundant": bool(max_cap6 <= CAPACITY),
+        "budget_limit": int(budget), "capacity_limit": int(capacity),
+        "max_budget_any_6": int(cost[-K_SELECT:].sum()), "min_budget_any_6": int(cost[:K_SELECT].sum()),
+        "budget_redundant": bool(cost[-K_SELECT:].sum() <= budget),
+        "max_capacity_any_6": int(cap[-K_SELECT:].sum()), "min_capacity_any_6": int(cap[:K_SELECT].sum()),
+        "capacity_redundant": bool(cap[-K_SELECT:].sum() <= capacity),
     }
 
 
-def build_qubo(c: pd.DataFrame, pre: dict, cardinality_penalty: bool):
-    """Minimise f = -sum v_i x_i / scale + lam*(cap.x + slack - H)^2 [+ lam_k*(sum x - K)^2]."""
+def _slack_weights(rng: int) -> np.ndarray:
+    """Bounded binary encoding spanning exactly 0..rng (no zero-weight qubit; rng=0 -> no slack)."""
+    if rng <= 0:
+        return np.array([], dtype=int)
+    n = int(np.floor(np.log2(rng))) + 1
+    w = 2 ** np.arange(n)
+    w[-1] = rng - w[:-1].sum()
+    return w
+
+
+def build_qubo(c: pd.DataFrame, pre: dict, cardinality_penalty: bool, lam_mult: float = 1.0):
+    """Minimise f = -sum v_i x_i / scale
+         + lam * (cost.x + s_B - B)^2      if the budget can bind
+         + lam * (cap.x  + s_H - H)^2      if the capacity can bind
+         [+ lam * (sum x - K)^2]           only for the penalty baseline (cardinality_penalty=True).
+    Slack registers are bounded binary encodings of 0..(limit - min over 6-subsets)."""
     v = c.expected_net_value.values
     scale = np.abs(v).max()
     vn = v / scale
-    lam = 1.0 + np.abs(vn).sum()  # any violation costs more than the largest possible objective gain
+    lam = lam_mult * (1.0 + np.abs(vn).sum())  # lam_mult=1: any violation costs more than the objective range
     n_dec = N_CANDIDATES
-    if pre["capacity_redundant"]:
-        n_slack, weights = 0, np.array([])
-    else:
-        rng = CAPACITY - pre["min_capacity_any_6"]
-        n_slack = max(1, ceil(log2(rng + 1)))
-        weights = 2 ** np.arange(n_slack)
-        weights[-1] = rng - weights[:-1].sum()  # bounded encoding: slack spans exactly 0..rng
+    regs = []  # (name, coeffs on decision qubits, limit, slack weights)
+    if not pre["budget_redundant"]:
+        regs.append(("budget", c.contact_cost.values.astype(float), pre["budget_limit"],
+                     _slack_weights(pre["budget_limit"] - pre["min_budget_any_6"])))
+    if not pre["capacity_redundant"]:
+        regs.append(("capacity", c.capacity_units.values.astype(float), pre["capacity_limit"],
+                     _slack_weights(pre["capacity_limit"] - pre["min_capacity_any_6"])))
+    n_slack = sum(len(r[3]) for r in regs)
     n = n_dec + n_slack
     Q, lin, const = np.zeros((n, n)), np.zeros(n), 0.0
     lin[:n_dec] -= vn
-    if n_slack:
-        a = np.concatenate([c.capacity_units.values, weights]).astype(float)
+    off = n_dec
+    slack_layout = {}
+    for name, coef, limit, w in regs:
+        a = np.zeros(n)
+        a[:n_dec] = coef
+        a[off:off + len(w)] = w
+        slack_layout[name] = {"qubits": list(range(off, off + len(w))), "weights": w.tolist(), "limit": limit}
+        off += len(w)
         Q += lam * np.outer(a, a)
-        lin += -2 * lam * CAPACITY * a
-        const += lam * CAPACITY**2
+        lin += -2 * lam * limit * a
+        const += lam * limit**2
     if cardinality_penalty:
         e = np.zeros(n)
         e[:n_dec] = 1
         Q += lam * np.outer(e, e)
         lin += -2 * lam * K_SELECT * e
         const += lam * K_SELECT**2
-    return {"Q": Q, "lin": lin, "const": const, "lam": lam, "scale": scale,
-            "n_dec": n_dec, "n_slack": n_slack, "slack_weights": weights.tolist()}
+    return {"Q": Q, "lin": lin, "const": const, "lam": lam, "lam_mult": lam_mult, "scale": scale,
+            "n_dec": n_dec, "n_slack": n_slack, "slack": slack_layout,
+            "slack_weights": [w for r in regs for w in r[3].tolist()]}
 
 
 def diag_cost(qubo) -> np.ndarray:
@@ -109,10 +133,10 @@ def diag_cost(qubo) -> np.ndarray:
     return np.einsum("ki,ij,kj->k", b, qubo["Q"], b) + b @ qubo["lin"] + qubo["const"]
 
 
-def decision_view(c: pd.DataFrame, n: int):
+def decision_view(c: pd.DataFrame, n: int, budget: int = BUDGET, capacity: int = CAPACITY):
     b = bits_of_index(np.arange(2**n), n)[:, :N_CANDIDATES]
     v = b @ c.expected_net_value.values
-    feas = (b.sum(1) == K_SELECT) & (b @ c.contact_cost.values <= BUDGET) & (b @ c.capacity_units.values <= CAPACITY)
+    feas = (b.sum(1) == K_SELECT) & (b @ c.contact_cost.values <= budget) & (b @ c.capacity_units.values <= capacity)
     return b, v, feas
 
 
@@ -151,8 +175,8 @@ def interp(theta, p):
     return np.concatenate([up(beta), up(gamma)])
 
 
-def score(probs, c, bf, n):
-    b, v, feas = decision_view(c, n)
+def score(probs, c, bf, n, budget: int = BUDGET, capacity: int = CAPACITY):
+    b, v, feas = decision_view(c, n, budget, capacity)
     opt_mask = (b == bf["x"]).all(1)
     w6 = b.sum(1) == K_SELECT
     return {
@@ -172,12 +196,13 @@ def sample_and_select(probs, c, bf, n, shots, seed):
     return counts, select_from_counts(counts, c)
 
 
-def select_from_counts(counts: dict, c: pd.DataFrame):
+def select_from_counts(counts: dict, c: pd.DataFrame, budget: int = BUDGET, capacity: int = CAPACITY):
+    """Highest-objective feasible bitstring among the measured samples (not the most frequent one)."""
     v, cost, cap = c.expected_net_value.values, c.contact_cost.values, c.capacity_units.values
     best = None
     for key, cnt in counts.items():
         x = bitstring_to_bits(key)[:N_CANDIDATES]
-        if x.sum() == K_SELECT and cost @ x <= BUDGET and cap @ x <= CAPACITY:
+        if x.sum() == K_SELECT and cost @ x <= budget and cap @ x <= capacity:
             if best is None or v @ x > best[1] + 1e-12:
                 best = (key, float(v @ x), cnt)
     return best
@@ -231,9 +256,10 @@ def main():
         print("xy p", p, {k: round(v, 4) for k, v in sweep[-1].items() if isinstance(v, float)}, flush=True)
     # standard penalty QAOA baseline (|+> start, X mixer, cardinality as a penalty)
     qubo_pen = build_qubo(c, pre, cardinality_penalty=True)
-    baseline = []
+    baseline, init_b = [], None
     for p in (1, 2):
-        _, _, opt_b, probs_b = run_qaoa(c, qubo_pen, p, "x")
+        _, _, opt_b, probs_b = run_qaoa(c, qubo_pen, p, "x", init=init_b)
+        init_b = interp(opt_b.x, p)  # same INTERP warm start as the constraint-native ansatz
         baseline.append({"p": p, "ansatz": "penalty QUBO + X mixer", "params": opt_b.x.tolist(), **score(probs_b, c, bf, n)})
         print("pen p", p, {k: round(v, 4) for k, v in baseline[-1].items() if isinstance(v, float)}, flush=True)
     # pick depth with highest probability of the optimum

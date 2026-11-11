@@ -300,6 +300,7 @@ def final_fit(train, test, shipped: str, n_boot: int = 200):
             boot[i] = w * bq + (1 - w) * bl
         else:
             boot[i] = bl
+    info["p_lr_only"] = p_lr
     return p, boot, info
 
 
@@ -383,6 +384,8 @@ def main():
     p, boot, info = final_fit(train, test, decision["shipped_model"])
     ranked = rank_with_tiebreak(test["customer_id"], p)
     ranked.to_csv(ROOT / "stage1_predictions.csv", index=False)
+    # Counterfactual for the report: what plain LR (the strongest single model) would have shipped.
+    rank_with_tiebreak(test["customer_id"], info.pop("p_lr_only")).to_csv(RESULTS / "stage1_predictions_LR_only.csv", index=False)
     np.save(RESULTS / "stage1_bootstrap_test_probs.npy", boot)
     pd.DataFrame(boot, columns=test["customer_id"].values).to_csv(RESULTS / "stage1_bootstrap_test_probs.csv", index=False)
     top10 = ranked[ranked.is_top_10 == 1].customer_id.tolist()

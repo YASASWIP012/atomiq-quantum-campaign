@@ -77,11 +77,13 @@ Off-diagonal kernel variance peaks near bandwidth 0.06. At bandwidth 1 it is abo
 | Projected quantum kernel (PQK) | 0.502 | 0.165 | 0.1057 | 0.373 | 0.090 | 0.077 |
 | **Hybrid (shipped)** | 0.603 | 0.242 | 0.1029 | 0.361 | 0.177 | 0.151 |
 
-The pre-registered rule ships the hybrid when its log loss is no worse than LR's (paired 95% CI contains 0) and its PR-AUC is not clearly worse (CI upper bound ≥ 0). We used corrected resampled t intervals (Nadeau & Bengio, 2003). The hybrid's log-loss difference from LR is +0.004 [−0.012, +0.020], and its PR-AUC difference is −0.027 [−0.116, +0.062]. Both conditions hold, so the shipped model is **0.7 · LR + 0.3 · PQK**, refitted on all 300 customers (bandwidth 0.1, γ = 1, C = 0.1).
+The pre-registered rule is a non-inferiority test with no margin. It ships the hybrid when its log loss is no worse than LR's (paired 95% CI contains 0) and its PR-AUC is not clearly worse (CI upper bound ≥ 0). With 35 positives these intervals are wide, so the rule is lenient, and we say so. We used corrected resampled t intervals (Nadeau & Bengio, 2003). The hybrid's log-loss difference from LR is +0.004 [−0.012, +0.020], and its PR-AUC difference is −0.027 [−0.116, +0.062]. Both conditions hold, so the shipped model is **0.7 · LR + 0.3 · PQK**, refitted on all 300 customers (bandwidth 0.1, γ = 1, C = 0.1). Inside the CV the inner loop picks the quantum kernel per fold: the fidelity kernel in 36 of 50 folds and the projected kernel in 14. The final fit on all 300 customers picked the projected kernel.
 
 What this shows, stated plainly: on 300 rows with 35 positives, the quantum kernels on their own rank customers barely better than chance, and the blend is statistically level with logistic regression, not better. Logistic regression is the strongest single model here. We report this as a negative result for the quantum classifier. The quantum component stays in the shipped model only because the rule we fixed in advance allows it, and it costs nothing measurable.
 
-**Changes made after the first run, and why.** Every change used training data only, and each earlier table is kept in `results/`.
+**What plain LR would have done.** We also refitted LR alone on all 300 customers (`results/stage1_predictions_LR_only.csv`). Its ranking has a Spearman correlation of 0.991 with ours. It has the same top 10, and brute force on it picks the same six customers. Under LR's probabilities, P(≥3) for those six would be 0.087 instead of 0.062. So the quantum blend changes the calibration a little and the decision not at all.
+
+**Changes made after the first run, and why.** The decision rule in `PREREGISTRATION.md` was committed before any model was fitted (see `git log`). After that commit we made two changes, both on training data only, and kept each earlier table in `results/`. The reported 0.621 for LR is therefore slightly optimistic, because the feature set was chosen on the same CV.
 
 1. Dropping job, marital, education and default lifted LR's CV ROC-AUC from 0.605 to 0.621. The first-run table is `stage1_cv_summary_ablation_allcats.csv`.
 2. The first run used unregularised Platt scaling (C = 1e4). On inner folds with about four positives it became overconfident, and the quantum models' log loss reached 0.55 ± 0.84. Regularising it (C = 1) brought that to 0.367 ± 0.024. That table is `stage1_cv_summary_ablation_unregularised_platt.csv`. The decision rule did not change.
@@ -100,7 +102,7 @@ What this shows, stated plainly: on 300 rows with 35 positives, the quantum kern
 
 **Optimisation.** We used COBYLA with 4 random starts per depth and INTERP warm starts from depth p to p + 1 (Zhou et al., 2020). Seeds are in `src/atomiq/common.py`.
 
-| Ansatz (ideal statevector) | p | P(feasible) | P(brute-force optimum) | Approx. ratio |
+| Ansatz (ideal statevector) | p | P(feasible) | P(brute-force optimum) | Approx. ratio* |
 |---|---|---|---|---|
 | Dicke state only (uniform guess) | 0 | 1.000 | 0.0048 (= 1/210) | 0.537 |
 | Dicke + XY ring QAOA | 1 | 1.000 | 0.0127 | 0.746 |
@@ -111,11 +113,36 @@ What this shows, stated plainly: on 300 rows with 35 positives, the quantum kern
 
 ![qaoa depth](figures/stage2_qaoa_depth.png)
 
-At p = 3 the circuit returns the optimum 33 times more often than uniform guessing. The usual penalty formulation wastes about half its shots on invalid strings. We sampled 4,096 shots (seed 5), and the most frequent feasible string, `0111001101`, appeared 679 times. It decodes to the brute-force optimum.
+\*Approx. ratio is the expected objective of feasible samples divided by the optimum. Two candidates have negative net value, so the ratio is not shift-invariant. Read it as a relative comparison only.
+
+At p = 3 the circuit returns the optimum 33 times more often than uniform guessing. The usual penalty formulation wastes about half its shots on invalid strings. We sampled 4,096 shots (seed 5). The pre-registered rule takes the highest-objective feasible string among the samples. Here that is `0111001101`, which is also the most frequent string (679 shots) and decodes to the brute-force optimum.
 
 **Decoding and bit order.** Qubit i is the i-th ranked candidate. Qiskit count keys are written with qubit 0 on the right, so `0111001101` reversed is 1,0,1,1,0,0,1,1,1,0. That gives qubits 0, 2, 3, 6, 7 and 8, which are C0031, C0256, C0028, C0338, C0079 and C0088. `tests/test_qaoa.py::test_bit_ordering_round_trip` pins this down.
 
 **Close call.** The runner-up subset scores 6.588, which is 1.2% below the optimum. A model with slightly different probabilities can swap one customer, as the bootstrap below shows.
+
+### Stress test: what happens when the constraints bind
+
+On the real limits the cost layer has no ZZ terms, so the penalty and slack machinery never runs. To test it we kept the same ten candidates and tightened the limits until they bind (`python -m atomiq.stage2_stress`, results in `results/stage2_stress.json`). Each slack register is a bounded binary encoding of 0 to (limit − smallest 6-subset total), and a test checks that it covers exactly that range. The optimiser runs on an exact vectorised simulator that tests show matches Qiskit's statevector for both mixers.
+
+| Scenario | Feasible subsets | Qubits (slack) | ZZ terms | Ansatz | P(feasible) p=1 / 2 / 3 | P(optimum) p=1 / 2 / 3 | Best sample = optimum? |
+|---|---|---|---|---|---|---|---|
+| A: capacity ≤ 12 | 105 | 13 (3) | 78 | Dicke + XY | 0.647 / 0.688 / 0.699 | 0.036 / 0.035 / 0.054 | yes, all depths |
+| | | | | penalty + X | 0.184 / 0.204 / – | 0.004 / 0.012 / – | yes |
+| B: budget ≤ 15 | 46 | 12 (2) | 66 | Dicke + XY | 0.290 / 0.390 / 0.395 | 0.011 / 0.002 / 0.002 | yes, all depths |
+| | | | | penalty + X | 0.062 / 0.066 / – | 0.001 / 0.0003 / – | p=1 only (p=2 gap 1.2%) |
+| C: budget ≤ 15, capacity ≤ 11 | 8 | 15 (5) | 99 | Dicke + XY | 0.047 / 0.104 / 0.111 | 0.011 / 0.029 / 0.027 | yes, all depths |
+| | | | | penalty + X | 0.028 / 0.031 / – | 0.005 / 0.005 / – | yes |
+
+![stress test](figures/stage2_stress.png)
+
+What we take from this:
+
+- Keeping the search inside the six-of-ten subspace leaves 3 to 6 times more probability on feasible strings than the standard penalty QUBO.
+- With 4,096 shots, the best feasible sample is the brute-force optimum in 13 of 14 runs.
+- P(optimum) is not always above what you would get by sampling uniformly from the feasible set (1/105, 1/46 and 1/8 here). In scenario B it falls below that at p = 2 and 3. COBYLA minimises the expected penalised cost, not P(optimum), and with large penalty terms those two objectives come apart. You would also need to know the feasible set to sample from it uniformly, which is the hard part. The fair baseline is the Dicke state itself (1/210 for the optimum).
+- Results depend on the penalty weight and on where the optimiser starts. Rerunning p = 2 from random starts at λ multipliers of 0.25 to 4 gives P(feasible) anywhere from 0.26 to 0.69 (table in the JSON).
+- At p = 1 on FakeKingston the circuits need 812 to 941 two-qubit gates and 161 to 192 SWAPs. That is too deep for useful hardware results today.
 
 ## Stage 3: chance of at least three conversions
 
@@ -148,9 +175,11 @@ Most of the Stage 2 two-qubit gates come from the Dicke preparation, which uses 
 - 38.8% of shots keep Hamming weight 6. Noise leaks the rest out of the subspace.
 - Post-selecting on weight 6, a symmetry the ideal circuit guarantees, the optimum appears in 10.2% of kept shots. That is 21 times the uniform rate. Without post-selection the rate is 4.0%, which is 8 times uniform.
 - At p = 1 the noisy circuit is close to uniform: 0.79% after post-selection against 0.48% uniform. Depth helps in the ideal case and still helps under this noise model.
+- The noisy runs reuse the angles optimised on the noiseless simulator. We did not re-optimise under noise.
+- Here every weight-6 string is feasible, so post-selecting on weight 6 is the same as keeping only feasible strings.
 - In both noisy runs the best feasible sampled string is still the brute-force optimum.
 
-The Stage 3 circuit has no two-qubit gates, so readout error dominates its noise. Correcting with per-qubit assignment matrices, measured on the same physical qubits, removes 93% of the bias.
+The Stage 3 circuit has no two-qubit gates, so readout error dominates its noise. The unmitigated bias (0.0027) is about 1.6 standard errors of the 20,000-shot noise. After correcting with per-qubit assignment matrices measured on the same physical qubits, the residual (0.0002) is consistent with zero.
 
 **Real hardware.** [`scripts/run_hardware.py`](scripts/run_hardware.py) submits one job to `ibm_kingston` on the IBM Quantum Open Plan. The job holds the Stage 3 circuit, two readout-calibration circuits and the Stage 2 p = 1 circuit, run with dynamical decoupling and gate twirling at 4,000 shots each. It saves raw counts and the job ID to `results/`. `make stage2 stage3` then adds hardware rows to the result files. Not run for this submission: the run needs an IBM Quantum API key, which we did not have during the sprint. All noisy results above therefore come from the FakeKingston noise model.
 
@@ -169,13 +198,13 @@ We refitted the shipped Stage 1 model on 200 bootstrap resamples of the training
 
 ![error budget](figures/stage3_error_budget.png)
 
-The delta-method estimate is about 10% below the bootstrap value, which is expected for a first-order approximation at bootstrap band width.
+The delta-method estimate is about 10% below the bootstrap value. The bootstrap distribution of P(≥3) is right-skewed (95% band 0.011 to 0.200 around 0.062), and a first-order expansion misses that skew. The bootstrap keeps the final hyperparameters fixed, so both figures somewhat understate model uncertainty.
 
 **Selection stability.** We repeated ranking and brute-force selection for each bootstrap replicate. The top 10 never came out exactly the same, and on average 2 of our 6 customers were chosen again (distribution of overlap: 0 in 46 replicates, 1 in 36, 2 in 38, 3 in 41, 4 in 31, 5 in 8). The predicted probabilities for the top 25 customers sit in a narrow band (0.13 to 0.20), so small model changes reorder them. This is the largest weakness in the pipeline. It comes from the data, not from the quantum steps.
 
 ## Business reading
 
-- Calling C0031, C0256, C0028, C0338, C0079 and C0088 gives the highest expected net value under our model: 6.67 deposit units at a contact cost of 14 and capacity of 15.
+- Calling C0031, C0256, C0028, C0338, C0079 and C0088 gives the highest expected net value under our model: 6.67 deposit units (expected deposits of 20.67 minus contact costs of 14), using 15 capacity units.
 - Three or more subscriptions from six calls has about a 6% chance; the most likely outcome is one subscription (40%). If the campaign target really is three subscribers, six calls are not enough. Going down our ranked list, the chance of three or more reaches 50% at about 17 calls (44% at 15, 55% at 18).
 - The ranking is weak (CV ROC-AUC about 0.6). Treat this list as a reasonable first wave and record outcomes, so the next model has more than 35 positives to learn from.
 - Neither budget nor capacity is the bottleneck for this candidate pool: 11 of 25 budget and 7 of 22 capacity units remain unused. The limit is the six-call cap.
@@ -190,12 +219,13 @@ The delta-method estimate is about 10% below the bootstrap value, which is expec
 
 ## Reproduce
 
-Requires Python 3.12 (3.11 works). On a laptop the full run takes about 6 minutes.
+Requires Python 3.12 (3.11 works). On an Apple-silicon laptop the full run took about 4.5 minutes, and a fresh clone reproduced every result file exactly.
 
 ```bash
-git clone REPO_URL && cd atomiq
+git clone https://github.com/YASASWIP012/atomiq-quantum-campaign && cd atomiq
 make setup        # creates .venv and installs the pinned requirements.txt
 make all          # stage1 → stage2 → stage3 → tests → submission check
+make stress       # optional: Stage 2 binding-constraint stress test (about 4 min)
 python scripts/make_deck.py   # rebuilds presentation/deck.pdf from the result files
 ```
 
@@ -244,12 +274,17 @@ src/atomiq/
   stage1.py                   nested CV, models, decision rule, final fit, bootstrap, figures
   qaoa.py                     Dicke preparation, XY ring mixer, QUBO→Ising, QAOA circuit, bit-order helpers
   stage2.py                   presolve, brute force, QAOA depth sweep, penalty baseline, transpile + noisy runs
+  stage2_stress.py            binding-constraint scenarios with slack registers, penalty-weight sweep
+  qaoa_fast.py                exact vectorised QAOA simulator used inside the optimiser loop
   stage3.py                   encoding circuit, exact/Monte Carlo/Aer/noisy/mitigated estimates, error budget
 scripts/
   check_submission.py         25 consistency checks across the three stages
+  make_video.py               builds the narrated walkthrough video (ElevenLabs voice) from the deck and live plots
   run_hardware.py             optional real-QPU job (ibm_kingston)
   make_deck.py                builds presentation/deck.pdf from the result files
-tests/                        statevector equivalence, Dicke state, mixer, phase separator, bit order
+tests/                        25 tests: statevector equivalence, Dicke state, mixers, phase separator, fast simulator,
+                              slack encoding, presolve soundness, QUBO ground state = brute force, Poisson-binomial,
+                              gradient, readout inversion, bit order, tie-break
 results/                      CV tables, ablations, bootstrap probabilities, hardware outputs
 figures/                      all plots in this README
 ```

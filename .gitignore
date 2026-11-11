@@ -4,3 +4,4 @@ __pycache__/
 .env
 .pytest_cache/
 data/raw/PROBLEM_STATEMENT.pdf
+presentation/video_build/

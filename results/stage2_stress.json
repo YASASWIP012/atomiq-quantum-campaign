@@ -1,0 +1,562 @@
+{
+  "scenarios": [
+    {
+      "name": "A: capacity <= 12",
+      "budget": 25,
+      "capacity": 12,
+      "presolve": {
+        "budget_limit": 25,
+        "capacity_limit": 12,
+        "max_budget_any_6": 21,
+        "min_budget_any_6": 13,
+        "budget_redundant": true,
+        "max_capacity_any_6": 17,
+        "min_capacity_any_6": 7,
+        "capacity_redundant": false
+      },
+      "n_feasible": 105,
+      "optimal_ids": [
+        "C0031",
+        "C0256",
+        "C0112",
+        "C0338",
+        "C0079",
+        "C0088"
+      ],
+      "optimal_objective": 6.416818493845726,
+      "second_best_objective": 6.000870378726827,
+      "uniform_feasible_p_optimal": 0.009523809523809525,
+      "runs": [
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 1,
+          "qubits": 13,
+          "slack_qubits": 3,
+          "zz_terms": 78,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.423543036499797,
+            3.033631911712373
+          ],
+          "p_feasible": 0.6468554100187796,
+          "p_optimal": 0.03592415717153581,
+          "p_weight6": 1.0000000000000004,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 2,
+          "qubits": 13,
+          "slack_qubits": 3,
+          "zz_terms": 78,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.730784171526581,
+            2.7941325081541026,
+            3.02485013635219,
+            3.0371169015356143
+          ],
+          "p_feasible": 0.6884259751303032,
+          "p_optimal": 0.03477594462447848,
+          "p_weight6": 1.0000000000000002,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 3,
+          "qubits": 13,
+          "slack_qubits": 3,
+          "zz_terms": 78,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.696175382106217,
+            2.828879807643015,
+            3.031881665918822,
+            3.0254899614261834,
+            3.036266199403453,
+            3.0572567558734267
+          ],
+          "p_feasible": 0.6988951176664842,
+          "p_optimal": 0.05379723133885417,
+          "p_weight6": 1.0000000000000009,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "penalty QUBO + X mixer",
+          "p": 1,
+          "qubits": 13,
+          "slack_qubits": 3,
+          "zz_terms": 78,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.950841411026076,
+            1.51895783691522
+          ],
+          "p_feasible": 0.18448792772169922,
+          "p_optimal": 0.0037669022209845587,
+          "p_weight6": 0.3014689715924517,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "penalty QUBO + X mixer",
+          "p": 2,
+          "qubits": 13,
+          "slack_qubits": 3,
+          "zz_terms": 78,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.9165982755639694,
+            2.9535029086989555,
+            1.5158075019524377,
+            1.5285772061939826
+          ],
+          "p_feasible": 0.20369135123917004,
+          "p_optimal": 0.012051619589911234,
+          "p_weight6": 0.3088450380184315,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        }
+      ],
+      "lambda_sensitivity_p2": [
+        {
+          "lambda_mult": 0.25,
+          "lambda": 1.0413682661068462,
+          "p_feasible": 0.5759122082129087,
+          "p_optimal": 0.03440865463317305,
+          "p_weight6": 1.0000000000000013,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 0.5,
+          "lambda": 2.0827365322136924,
+          "p_feasible": 0.6815179154983683,
+          "p_optimal": 0.0013883386406290086,
+          "p_weight6": 1.0000000000000009,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 1.0,
+          "lambda": 4.165473064427385,
+          "p_feasible": 0.4850942351814933,
+          "p_optimal": 0.004925151415740876,
+          "p_weight6": 1.0000000000000007,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 2.0,
+          "lambda": 8.33094612885477,
+          "p_feasible": 0.5308514247650271,
+          "p_optimal": 0.0018455357784320772,
+          "p_weight6": 1.0000000000000018,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 4.0,
+          "lambda": 16.66189225770954,
+          "p_feasible": 0.5476959781258435,
+          "p_optimal": 0.002766867294458254,
+          "p_weight6": 1.0000000000000004,
+          "best_sampled_feasible_objective": 6.416818493845726,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        }
+      ],
+      "transpile_p1_fakekingston": {
+        "logical_qubits": 13,
+        "transpiled_depth": 1543,
+        "transpiled_2q_gates": 847,
+        "swap_count": 172
+      }
+    },
+    {
+      "name": "B: budget <= 15",
+      "budget": 15,
+      "capacity": 22,
+      "presolve": {
+        "budget_limit": 15,
+        "capacity_limit": 22,
+        "max_budget_any_6": 21,
+        "min_budget_any_6": 13,
+        "budget_redundant": false,
+        "max_capacity_any_6": 17,
+        "min_capacity_any_6": 7,
+        "capacity_redundant": true
+      },
+      "n_feasible": 46,
+      "optimal_ids": [
+        "C0031",
+        "C0256",
+        "C0028",
+        "C0338",
+        "C0079",
+        "C0088"
+      ],
+      "optimal_objective": 6.671081907546185,
+      "second_best_objective": 6.588047710799442,
+      "uniform_feasible_p_optimal": 0.021739130434782608,
+      "runs": [
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 1,
+          "qubits": 12,
+          "slack_qubits": 2,
+          "zz_terms": 66,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.608567105949766,
+            3.060479186056826
+          ],
+          "p_feasible": 0.29038311545794265,
+          "p_optimal": 0.01064200284752921,
+          "p_weight6": 1.0000000000000004,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 2,
+          "qubits": 12,
+          "slack_qubits": 2,
+          "zz_terms": 66,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.292506425061927,
+            2.279580217428492,
+            2.2571309218366946,
+            2.292140569509037
+          ],
+          "p_feasible": 0.3898701093232476,
+          "p_optimal": 0.001467448161541666,
+          "p_weight6": 0.9999999999999999,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 3,
+          "qubits": 12,
+          "slack_qubits": 2,
+          "zz_terms": 66,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.2764122358158,
+            2.4683094304051045,
+            2.721905522210495,
+            2.2140098030706827,
+            2.29961419863912,
+            2.263587309704468
+          ],
+          "p_feasible": 0.39478620422920113,
+          "p_optimal": 0.0019161006285025356,
+          "p_weight6": 0.9999999999999988,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "penalty QUBO + X mixer",
+          "p": 1,
+          "qubits": 12,
+          "slack_qubits": 2,
+          "zz_terms": 66,
+          "lambda": 4.165473064427385,
+          "params": [
+            3.360821729121081,
+            2.269476683304088
+          ],
+          "p_feasible": 0.06164406998469267,
+          "p_optimal": 0.0013337167277062412,
+          "p_weight6": 0.25716503455433815,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "penalty QUBO + X mixer",
+          "p": 2,
+          "qubits": 12,
+          "slack_qubits": 2,
+          "zz_terms": 66,
+          "lambda": 4.165473064427385,
+          "params": [
+            3.6546937250134475,
+            3.3557451460019436,
+            2.2692497945577377,
+            2.5663327245277836
+          ],
+          "p_feasible": 0.06576465760565382,
+          "p_optimal": 0.0003164476373111102,
+          "p_weight6": 0.31390773456285304,
+          "best_sampled_feasible_objective": 6.588047710799442,
+          "gap_best_sampled": 0.012446886111953812,
+          "found_optimum_in_shots": false
+        }
+      ],
+      "lambda_sensitivity_p2": [
+        {
+          "lambda_mult": 0.25,
+          "lambda": 1.0413682661068462,
+          "p_feasible": 0.2633070413382155,
+          "p_optimal": 0.0004643823350834492,
+          "p_weight6": 1.0000000000000002,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 0.5,
+          "lambda": 2.0827365322136924,
+          "p_feasible": 0.3123435383110631,
+          "p_optimal": 0.005738897628846384,
+          "p_weight6": 0.9999999999999996,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 1.0,
+          "lambda": 4.165473064427385,
+          "p_feasible": 0.3898701093232476,
+          "p_optimal": 0.001467448161541666,
+          "p_weight6": 0.9999999999999999,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 2.0,
+          "lambda": 8.33094612885477,
+          "p_feasible": 0.3315423661288909,
+          "p_optimal": 0.004156964685852796,
+          "p_weight6": 0.9999999999999999,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 4.0,
+          "lambda": 16.66189225770954,
+          "p_feasible": 0.31315506172394375,
+          "p_optimal": 0.02077651727865316,
+          "p_weight6": 1.0000000000000018,
+          "best_sampled_feasible_objective": 6.671081907546185,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        }
+      ],
+      "transpile_p1_fakekingston": {
+        "logical_qubits": 12,
+        "transpiled_depth": 1566,
+        "transpiled_2q_gates": 812,
+        "swap_count": 161
+      }
+    },
+    {
+      "name": "C: budget <= 15, capacity <= 11",
+      "budget": 15,
+      "capacity": 11,
+      "presolve": {
+        "budget_limit": 15,
+        "capacity_limit": 11,
+        "max_budget_any_6": 21,
+        "min_budget_any_6": 13,
+        "budget_redundant": false,
+        "max_capacity_any_6": 17,
+        "min_capacity_any_6": 7,
+        "capacity_redundant": false
+      },
+      "n_feasible": 8,
+      "optimal_ids": [
+        "C0031",
+        "C0256",
+        "C0112",
+        "C0338",
+        "C0088",
+        "C0193"
+      ],
+      "optimal_objective": 5.126046536064477,
+      "second_best_objective": 5.038365444075586,
+      "uniform_feasible_p_optimal": 0.125,
+      "runs": [
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 1,
+          "qubits": 15,
+          "slack_qubits": 5,
+          "zz_terms": 99,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.5011276038766423,
+            3.032310699596026
+          ],
+          "p_feasible": 0.04690706049043046,
+          "p_optimal": 0.010888980478944706,
+          "p_weight6": 1.0000000000000009,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 2,
+          "qubits": 15,
+          "slack_qubits": 5,
+          "zz_terms": 99,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.7341731630150594,
+            2.8262700273763426,
+            3.0252513893797985,
+            3.039496388299775
+          ],
+          "p_feasible": 0.10361704048457528,
+          "p_optimal": 0.028726880332897452,
+          "p_weight6": 0.9999999999999991,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "Dicke + XY (constraint-native)",
+          "p": 3,
+          "qubits": 15,
+          "slack_qubits": 5,
+          "zz_terms": 99,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.6581652377803713,
+            2.802740289398606,
+            2.879166468518265,
+            3.024376881848651,
+            3.0345964625352764,
+            3.0477732166231735
+          ],
+          "p_feasible": 0.11126727385746651,
+          "p_optimal": 0.026822555313388965,
+          "p_weight6": 1.0000000000000022,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "penalty QUBO + X mixer",
+          "p": 1,
+          "qubits": 15,
+          "slack_qubits": 5,
+          "zz_terms": 99,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.908721532676915,
+            2.258481033336263
+          ],
+          "p_feasible": 0.027724457658458962,
+          "p_optimal": 0.004612668430794341,
+          "p_weight6": 0.2285134866319283,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "ansatz": "penalty QUBO + X mixer",
+          "p": 2,
+          "qubits": 15,
+          "slack_qubits": 5,
+          "zz_terms": 99,
+          "lambda": 4.165473064427385,
+          "params": [
+            2.9065778193102494,
+            3.206507155967902,
+            2.259024280367825,
+            2.260391060562949
+          ],
+          "p_feasible": 0.031468991672372014,
+          "p_optimal": 0.004653093992550762,
+          "p_weight6": 0.20881042168243574,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        }
+      ],
+      "lambda_sensitivity_p2": [
+        {
+          "lambda_mult": 0.25,
+          "lambda": 1.0413682661068462,
+          "p_feasible": 0.033091073209747156,
+          "p_optimal": 0.0021744440479969968,
+          "p_weight6": 1.0000000000000004,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 0.5,
+          "lambda": 2.0827365322136924,
+          "p_feasible": 0.0556844409993371,
+          "p_optimal": 0.013213059366606725,
+          "p_weight6": 0.9999999999999993,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 1.0,
+          "lambda": 4.165473064427385,
+          "p_feasible": 0.049356441150579966,
+          "p_optimal": 0.0004897187631794935,
+          "p_weight6": 1.0000000000000002,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 2.0,
+          "lambda": 8.33094612885477,
+          "p_feasible": 0.055739911593243596,
+          "p_optimal": 0.005268903962756987,
+          "p_weight6": 1.000000000000001,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        },
+        {
+          "lambda_mult": 4.0,
+          "lambda": 16.66189225770954,
+          "p_feasible": 0.04549245816214277,
+          "p_optimal": 0.008806436452270677,
+          "p_weight6": 1.0000000000000013,
+          "best_sampled_feasible_objective": 5.126046536064477,
+          "gap_best_sampled": 0.0,
+          "found_optimum_in_shots": true
+        }
+      ],
+      "transpile_p1_fakekingston": {
+        "logical_qubits": 15,
+        "transpiled_depth": 1625,
+        "transpiled_2q_gates": 941,
+        "swap_count": 192
+      }
+    }
+  ],
+  "shots": 4096,
+  "note": "Stress test only; the submitted selection uses the real limits (25, 22).",
+  "runtime_s": 97.2
+}

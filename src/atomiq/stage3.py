@@ -99,15 +99,12 @@ def p_from_quasi(quasi: np.ndarray, n: int, k: int = SUCCESS_THRESHOLD) -> float
 
 
 def transpile_report(qc, backend):
-    t = transpile(qc, backend, optimization_level=3, seed_transpiler=SEEDS["transpiler"])
-    ops = t.count_ops()
-    two = sum(v for g, v in ops.items() if g in ("cz", "cx", "ecr"))
-    one = sum(v for g, v in ops.items() if g not in ("cz", "cx", "ecr", "measure", "barrier", "delay"))
-    layout = t.layout.final_index_layout()
-    return t, {"backend": backend.name, "logical_qubits": qc.num_qubits, "physical_qubits": layout,
-               "original_depth": qc.depth(), "transpiled_depth": t.depth(), "transpiled_1q_gates": int(one),
-               "transpiled_2q_gates": int(two), "swap_count": 0, "basis_ops": {k: int(v) for k, v in ops.items()},
-               "optimization_level": 3, "seed_transpiler": SEEDS["transpiler"]}
+    from .stage2 import transpile_stats
+
+    t, st = transpile_stats(qc, backend, SEEDS["transpiler"])
+    st["physical_qubits"] = t.layout.final_index_layout()
+    st["original_depth"] = qc.depth()
+    return t, st
 
 
 def selection_stability(boot: np.ndarray, test_ids: list, chosen: set) -> dict:
@@ -133,6 +130,9 @@ def selection_stability(boot: np.ndarray, test_ids: list, chosen: set) -> dict:
             x[list(combo)] = 1
             if cost @ x <= BUDGET and cap @ x <= CAPACITY and v @ x > best:
                 best, bx = v @ x, x
+        if bx is None:  # no feasible 6-subset in this replicate's top 10
+            n_overlap.append(0)
+            continue
         sel = set(t10[bx == 1])
         same_sel += sel == chosen
         n_overlap.append(len(sel & chosen))
@@ -140,6 +140,33 @@ def selection_stability(boot: np.ndarray, test_ids: list, chosen: set) -> dict:
     return {"p_same_top10": same_top10 / n, "p_same_selection": same_sel / n,
             "mean_overlap_with_our_6": float(np.mean(n_overlap)),
             "overlap_histogram": {int(k): int(v) for k, v in zip(*np.unique(n_overlap, return_counts=True))}}
+
+
+def lr_counterfactual(our6: set, s1: pd.DataFrame) -> dict:
+    """If we had shipped plain logistic regression: its top 10, its brute-force 6 and its P(>=3)."""
+    import itertools
+
+    from .common import BUDGET, CAPACITY, load_stage2_data
+
+    lr = pd.read_csv(RESULTS / "stage1_predictions_LR_only.csv", dtype={"customer_id": str})
+    d = load_stage2_data().set_index("customer_id")
+    t10 = lr[lr.is_top_10 == 1].sort_values("rank")
+    ids10, p10 = t10.customer_id.values, t10.predicted_probability.values
+    cost, cap, dep = (d.loc[ids10, k].values for k in ("contact_cost", "capacity_units", "expected_deposit_value"))
+    v = p10 * dep - cost
+    best, bx = -np.inf, None
+    for combo in itertools.combinations(range(10), 6):
+        x = np.zeros(10, int)
+        x[list(combo)] = 1
+        if cost @ x <= BUDGET and cap @ x <= CAPACITY and v @ x > best:
+            best, bx = v @ x, x
+    sel = ids10[bx == 1]
+    ours10 = set(s1[s1.is_top_10 == 1].customer_id)
+    return {"lr_top10": ids10.tolist(), "top10_overlap_with_ours": len(set(ids10) & ours10),
+            "lr_selected_6": sel.tolist(), "selection_overlap_with_ours": len(set(sel) & our6),
+            "lr_p_ge3_exact": p_at_least(p10[bx == 1]),
+            "rank_correlation_spearman": float(pd.Series(lr.set_index("customer_id").predicted_probability)
+                                               .corr(s1.set_index("customer_id").predicted_probability, method="spearman"))}
 
 
 def main():
@@ -218,6 +245,7 @@ def main():
     cov = np.cov(pb.T)
     sd_delta = float(np.sqrt(g @ cov @ g))
     stab = selection_stability(boot, test.customer_id.tolist(), set(ids))
+    lr_cf = lr_counterfactual(set(ids), s1)
     budget = {
         "stage1_model_uncertainty_sd_bootstrap": float(boot_p3.std(ddof=1)),
         "stage1_model_uncertainty_sd_delta_method": sd_delta,
@@ -229,6 +257,7 @@ def main():
         "gradient_dP_dp": dict(zip(ids, g.tolist())),
         "selection_stability": stab,
     }
+    budget["lr_only_counterfactual"] = lr_cf
     # outputs
     common = {"selected_ids": "|".join(ids), "qubit_order": "|".join(f"q{q}={c}" for q, c in enumerate(ids)),
               "input_probabilities": "|".join(f"{x:.6f}" for x in p),
@@ -239,7 +268,7 @@ def main():
     summary = {
         "selected_ids": ids,
         "customer_to_qubit": {c: q for q, c in enumerate(ids)},
-        "bit_ordering": "Qiskit little-endian: qubit q is the rightmost-but-q character of a count key",
+        "bit_ordering": "Qiskit little-endian: in a count key, qubit 0 is the rightmost character and qubit q is the (q+1)-th character from the right",
         "input_probabilities": dict(zip(ids, p.tolist())),
         "circuit": {"gates": "RY(theta_q) on each qubit, theta_q = 2*arcsin(sqrt(p_q)); no entanglers (independence)",
                     "theta": dict(zip(ids, (2 * np.arcsin(np.sqrt(p))).tolist())), "success": "popcount >= 3",

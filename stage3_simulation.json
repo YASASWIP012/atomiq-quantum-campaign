@@ -15,7 +15,7 @@
     "C0079": 4,
     "C0088": 5
   },
-  "bit_ordering": "Qiskit little-endian: qubit q is the rightmost-but-q character of a count key",
+  "bit_ordering": "Qiskit little-endian: in a count key, qubit 0 is the rightmost character and qubit q is the (q+1)-th character from the right",
   "input_probabilities": {
     "C0031": 0.19829416173008785,
     "C0256": 0.16575618042039855,
@@ -308,9 +308,9 @@
     ]
   ],
   "transpilation": {
-    "backend": "fake_kingston",
     "logical_qubits": 6,
-    "physical_qubits": [
+    "physical_qubits_used": 6,
+    "physical_layout": [
       10,
       60,
       23,
@@ -319,6 +319,7 @@
       148
     ],
     "original_depth": 2,
+    "original_2q_gates": 0,
     "transpiled_depth": 5,
     "transpiled_1q_gates": 24,
     "transpiled_2q_gates": 0,
@@ -330,7 +331,16 @@
       "barrier": 1
     },
     "optimization_level": 3,
-    "seed_transpiler": 42
+    "seed_transpiler": 42,
+    "backend": "fake_kingston",
+    "physical_qubits": [
+      10,
+      60,
+      23,
+      151,
+      21,
+      148
+    ]
   },
   "hardware": null,
   "error_budget": {
@@ -364,6 +374,32 @@
         "4": 31,
         "5": 8
       }
+    },
+    "lr_only_counterfactual": {
+      "lr_top10": [
+        "C0031",
+        "C0081",
+        "C0256",
+        "C0028",
+        "C0112",
+        "C0229",
+        "C0338",
+        "C0088",
+        "C0079",
+        "C0193"
+      ],
+      "top10_overlap_with_ours": 10,
+      "lr_selected_6": [
+        "C0031",
+        "C0256",
+        "C0028",
+        "C0338",
+        "C0088",
+        "C0079"
+      ],
+      "selection_overlap_with_ours": 6,
+      "lr_p_ge3_exact": 0.08702493868110368,
+      "rank_correlation_spearman": 0.9913351335133512
     }
   },
   "note": "Stage 3 is classically trivial (an exact 7-term convolution). The circuit is a faithful, verifiable sampler of the stated model; no speed-up is claimed.",

@@ -51,7 +51,10 @@
   "feasible": true,
   "solver": "constraint-native QAOA p=3 (Dicke + XY ring), statevector, 4096 shots",
   "presolve": {
+    "budget_limit": 25,
+    "capacity_limit": 22,
     "max_budget_any_6": 21,
+    "min_budget_any_6": 13,
     "budget_redundant": true,
     "max_capacity_any_6": 17,
     "min_capacity_any_6": 7,
@@ -316,5 +319,5 @@
   "ibm_hardware": null,
   "n_feasible_subsets": 210,
   "n_cardinality_subsets": 210,
-  "runtime_s": 254.9
+  "runtime_s": 196.4
 }
