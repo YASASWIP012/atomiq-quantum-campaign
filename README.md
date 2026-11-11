@@ -41,6 +41,7 @@ We have no real users: this is a hackathon task scored on hidden labels, and we 
 | Slide deck (PDF, built from the result files) | [`presentation/deck.pdf`](presentation/deck.pdf) |
 | Video walkthrough (1 min 57 s) | [Google Drive](https://drive.google.com/file/d/1gyAnmR2OFbqoD_Thv0iyW7rwI3YuVDzm/view?usp=sharing) · same file in the repo: [`presentation/walkthrough.mp4`](presentation/walkthrough.mp4) (rebuilt from the result files by `scripts/make_video.py`) |
 | Result files | [`stage1_predictions.csv`](stage1_predictions.csv), [`stage2_selection.csv`](stage2_selection.csv) / [`.json`](stage2_selection.json), [`stage3_simulation.csv`](stage3_simulation.csv) / [`.json`](stage3_simulation.json) |
+| Notebook (runs the modules, shows every result, runs the 25 checks) | [`notebooks/end_to_end.ipynb`](notebooks/end_to_end.ipynb) |
 | Pre-registered model-selection rule (committed before any fit) | [`PREREGISTRATION.md`](PREREGISTRATION.md) |
 | Submission self-check (25 checks) | `make check` → [`scripts/check_submission.py`](scripts/check_submission.py) |
 
@@ -262,6 +263,7 @@ Requires Python 3.12 (3.11 works). On an Apple-silicon laptop the full run takes
 git clone https://github.com/YASASWIP012/atomiq-quantum-campaign && cd atomiq
 make setup        # creates .venv and installs the pinned requirements.txt
 make all          # stage1 → stage2 → stage3 → tests → submission check
+# or open notebooks/end_to_end.ipynb and set RUN_PIPELINE = True
 make stress       # optional: Stage 2 binding-constraint stress test (about 4 min)
 python scripts/make_deck.py   # rebuilds presentation/deck.pdf from the result files
 ```

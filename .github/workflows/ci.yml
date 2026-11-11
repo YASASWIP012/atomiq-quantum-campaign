@@ -20,6 +20,10 @@ jobs:
         run: PYTHONPATH=src python -m pytest -q
       - name: Check committed result files
         run: python scripts/check_submission.py
+      - name: Execute the notebook
+        run: |
+          python -m ipykernel install --user --name python3
+          RUN_PIPELINE=0 python -c "import nbformat, nbclient; nb = nbformat.read('notebooks/end_to_end.ipynb', 4); nbclient.NotebookClient(nb, timeout=600, kernel_name='python3', resources={'metadata': {'path': 'notebooks'}}).execute(); print('notebook ok')"
 
   reproduce:
     # Full rerun from scratch, then confirm the regenerated files match what is committed.

@@ -10,3 +10,6 @@ qiskit-ibm-runtime==0.52.0
 qiskit-machine-learning==0.9.1
 scikit-learn==1.9.1
 scipy==1.18.1
+nbformat==5.10.4
+nbclient==0.10.2
+ipykernel==6.29.5
