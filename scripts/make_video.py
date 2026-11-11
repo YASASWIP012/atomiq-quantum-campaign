@@ -41,7 +41,12 @@ def env(name: str) -> str | None:
 def tts(text: str, path: Path) -> None:
     key = env("ELEVENLABS_API_KEY")
     if not key:
-        sys.exit("ELEVENLABS_API_KEY missing (put it in .env). Nothing was generated.")
+        # Fallback: the built-in macOS voice, so the video can always be rebuilt offline.
+        aiff = path.with_suffix(".aiff")
+        subprocess.run(["say", "-v", env("MAC_VOICE") or "Daniel", "-r", "175", "-o", str(aiff), text], check=True)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(aiff), "-b:a", "160k", str(path)], check=True)
+        aiff.unlink()
+        return
     voice = env("ELEVENLABS_VOICE_ID") or "JBFqnCBsd6RMkjVDRZzb"  # premade "George"
     req = urllib.request.Request(
         f"https://api.elevenlabs.io/v1/text-to-speech/{voice}?output_format=mp3_44100_128",

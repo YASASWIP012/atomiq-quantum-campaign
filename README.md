@@ -20,7 +20,7 @@ The last row matters most for the business reading. The probability that three o
 | What | Where |
 |---|---|
 | Slide deck (PDF, built from the result files) | [`presentation/deck.pdf`](presentation/deck.pdf) |
-| Video walkthrough (2 min) | VIDEO_LINK |
+| Video walkthrough (1 min 57 s) | [`presentation/walkthrough.mp4`](presentation/walkthrough.mp4) (rebuilt from the result files by `scripts/make_video.py`) |
 | Result files | [`stage1_predictions.csv`](stage1_predictions.csv), [`stage2_selection.csv`](stage2_selection.csv) / [`.json`](stage2_selection.json), [`stage3_simulation.csv`](stage3_simulation.csv) / [`.json`](stage3_simulation.json) |
 | Pre-registered model-selection rule (committed before any fit) | [`PREREGISTRATION.md`](PREREGISTRATION.md) |
 | Submission self-check (25 checks) | `make check` → [`scripts/check_submission.py`](scripts/check_submission.py) |
