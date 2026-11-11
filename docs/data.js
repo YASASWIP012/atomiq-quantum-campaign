@@ -1,5 +1,5 @@
 window.ATOMIQ = {
- "commit": "661acab",
+ "commit": "73cdfe1",
  "selected": [
   "C0031",
   "C0256",
@@ -9,6 +9,7 @@ window.ATOMIQ = {
   "C0088"
  ],
  "bitstring": "0111001101",
+ "best_count": 679,
  "objective": 6.671081907546185,
  "optimum": 6.671081907546185,
  "gap": 0.0,

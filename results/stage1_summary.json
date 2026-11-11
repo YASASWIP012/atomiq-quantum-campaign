@@ -1245,5 +1245,5 @@
   "n_train": 300,
   "n_test": 100,
   "positives_train": 35,
-  "runtime_s": 56.2
+  "runtime_s": 73.5
 }

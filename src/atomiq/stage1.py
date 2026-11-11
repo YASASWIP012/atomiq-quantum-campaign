@@ -39,6 +39,10 @@ QK_BW = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6]
 PQK_BW = [0.1, 0.3, 1.0]
 PQK_GAMMA = [0.1, 1.0]
 EPS = 1e-6
+# Tuning scores are rounded before comparison so that exact ties (common: several C values give
+# identical rankings) break the same way on every platform, always to the first grid entry.
+# Without this, last-bit BLAS differences between macOS and Linux picked different models.
+TIE_DECIMALS = 6
 
 
 def _num_transform(df: pd.DataFrame) -> np.ndarray:
@@ -144,8 +148,9 @@ class QuantumModel:
                     kte = self._k(cfg, svb, pfb, sva, pfa)
                     m = SVC(kernel="precomputed", C=cfg[3], class_weight="balanced").fit(ktr, y[a])
                     scores.append(average_precision_score(y[b], m.decision_function(kte)))
-                if np.mean(scores) > best_score:
-                    best, best_score = cfg, np.mean(scores)
+                score = round(float(np.mean(scores)), TIE_DECIMALS)
+                if score > best_score:
+                    best, best_score = cfg, score
         self.cfg = best
         return best
 
@@ -171,8 +176,9 @@ def lr_fit_predict(dtr, ytr, dte, C=None):
                 m = Pipeline([("p", make_preprocessor()), ("m", LogisticRegression(C=c, max_iter=2000))])
                 m.fit(dtr.iloc[a], ytr[a])
                 ll.append(log_loss(ytr[b], m.predict_proba(dtr.iloc[b])[:, 1], labels=[0, 1]))
-            if np.mean(ll) < best_ll:
-                best, best_ll = c, np.mean(ll)
+            score = round(float(np.mean(ll)), TIE_DECIMALS)
+            if score < best_ll:
+                best, best_ll = c, score
         C = best
     m = Pipeline([("p", make_preprocessor()), ("m", LogisticRegression(C=C, max_iter=2000))]).fit(dtr, ytr)
     return np.clip(m.predict_proba(dte)[:, 1], EPS, 1 - EPS), C
@@ -198,7 +204,7 @@ def tune_blend(dtr, ytr, qcfg, lr_C) -> float:
         pq[b] = qm.fit_predict(dtr.iloc[a], ytr[a], dtr.iloc[b], cfg=qcfg)
         pl[b], _ = lr_fit_predict(dtr.iloc[a], ytr[a], dtr.iloc[b], C=lr_C)
     ws = np.linspace(0, 1, 11)
-    lls = [log_loss(ytr, w * pq + (1 - w) * pl, labels=[0, 1]) for w in ws]
+    lls = [round(log_loss(ytr, w * pq + (1 - w) * pl, labels=[0, 1]), TIE_DECIMALS) for w in ws]
     return float(ws[int(np.argmin(lls))])
 
 

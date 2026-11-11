@@ -558,5 +558,5 @@
   ],
   "shots": 4096,
   "note": "Stress test only; the submitted selection uses the real limits (25, 22).",
-  "runtime_s": 97.2
+  "runtime_s": 92.0
 }

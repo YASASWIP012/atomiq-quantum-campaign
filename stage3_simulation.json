@@ -403,5 +403,5 @@
     }
   },
   "note": "Stage 3 is classically trivial (an exact 7-term convolution). The circuit is a faithful, verifiable sampler of the stated model; no speed-up is claimed.",
-  "runtime_s": 9.7
+  "runtime_s": 9.3
 }

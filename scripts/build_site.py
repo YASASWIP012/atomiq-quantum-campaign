@@ -60,7 +60,7 @@ def main():
     data = {
         "commit": sha,
         "selected": s2["selected_ids"],
-        "bitstring": s2["selected_bitstring_qiskit_order"],
+        "bitstring": s2["selected_bitstring_qiskit_order"], "best_count": s2["best_sampled"]["count"],
         "objective": s2["objective_value"], "optimum": s2["brute_force_optimal_objective"], "gap": s2["optimality_gap"],
         "budget": [s2["total_budget_used"], s2["budget_limit"]], "capacity": [s2["total_capacity_used"], s2["capacity_limit"]],
         "candidates": cands,

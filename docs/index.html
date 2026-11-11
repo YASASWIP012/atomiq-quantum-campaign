@@ -276,7 +276,7 @@ pre.code .c{color:#8D8D8D}
           <div class="window__bar"><div class="lights"><i></i><i></i><i></i></div><span class="window__title t-mono">stage2_selection.json</span></div>
           <div style="padding:clamp(14px,2.4vw,24px)">
             <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px">
-              <div><div class="eyebrow"><span class="dot"></span>Measured bitstring · qubit 0 on the right</div><div class="bits" id="hero-bits" style="margin-top:8px"></div></div>
+              <div><div class="eyebrow"><span class="dot"></span>Best feasible sampled bitstring · qubit 0 on the right</div><div class="bits" id="hero-bits" style="margin-top:8px"></div></div>
               <span class="status" id="hero-status">Feasible · 0.0% gap to brute force</span>
             </div>
             <div class="tbl-wrap"><table class="tbl" id="hero-table">
@@ -311,7 +311,7 @@ pre.code .c{color:#8D8D8D}
         <div class="stat__src"><a href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/stage3_simulation.json">stage3_simulation.json</a></div>
       </div>
       <div class="card stat reveal" style="--i:2">
-        <div class="stat__label">QAOA returns the optimum</div>
+        <div class="stat__label">Probability QAOA returns the optimum</div>
         <div class="stat__num" id="ans-qaoa"></div>
         <div class="stat__label" id="ans-qaoa-sub"></div>
         <div class="stat__src"><a href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/stage2_selection.json">depth_sweep · stage2_selection.json</a></div>
@@ -343,18 +343,18 @@ pre.code .c{color:#8D8D8D}
           <div class="eyebrow">Stage 2 · select</div>
           <h3>A circuit that can't break the six-customer rule.</h3>
           <p class="t-small">QAOA starts in a Dicke state, an equal superposition of all 210 ways to choose six of ten, built gate by gate (Bärtschi &amp; Eidenbenz, <a class="t-accent" href="https://arxiv.org/abs/1904.07358">arXiv:1904.07358</a>). An XY ring mixer preserves the count. A presolve proves budget and capacity can't bind for these candidates, so the circuit needs 10 qubits and no penalty terms.</p>
-          <div class="chips"><span class="chip chip--soft">Gap to brute force: 0%</span><span class="chip chip--soft" id="s2-chip"></span><span class="chip chip--soft">Stress-tested with binding limits</span></div>
+          <div class="chips"><span class="chip chip--soft">Gap to brute force: 0%</span><span class="chip chip--soft" id="s2-chip"></span><span class="chip chip--soft">Stress test with binding limits: mixed</span></div>
         </div>
         <figure class="fig"><img src="figures/stage2_qaoa_depth.png" alt="Probability of the brute-force optimum rises with QAOA depth for the Dicke plus XY ansatz and stays near zero for the penalty formulation" loading="lazy" width="1376" height="525"><figcaption>Constraint-native QAOA vs the usual penalty QUBO, ideal statevector.</figcaption></figure>
       </div>
       <div class="split reveal">
         <div>
           <div class="eyebrow">Stage 3 · simulate</div>
-          <h3>Six qubits, one question.</h3>
-          <p class="t-small">Each selected customer is one qubit, rotated so that it reads 1 with that customer's probability. A shot succeeds when at least three read 1. We compare the result with the exact Poisson-binomial value, Monte Carlo, an IBM Kingston noise model and two readout mitigations.</p>
+          <h3>Six qubits, checked exactly.</h3>
+          <p class="t-small">Each selected customer is one qubit, rotated so that it reads 1 with that customer's probability. A shot succeeds when at least three read 1. We compare the result with the exact Poisson-binomial value, Monte Carlo, an IBM Kingston noise model and two readout mitigations. This stage is classically trivial; the circuit is a verifiable sampler of the stated model, nothing more.</p>
           <div class="chips"><span class="chip chip--soft">200,000 shots</span><span class="chip chip--soft">FakeKingston noise</span><span class="chip chip--soft">Tensored + M3 mitigation</span></div>
         </div>
-        <figure class="fig"><img src="figures/stage3_estimates.png" alt="All Stage 3 estimates sit at about 0.062, close to the exact value; the Stage 1 bootstrap band runs from 0.011 to 0.200" loading="lazy" width="1024" height="544"><figcaption>Every estimator lands on the exact value; the orange band is Stage 1 uncertainty.</figcaption></figure>
+        <figure class="fig"><img src="figures/stage3_estimates.png" alt="All Stage 3 estimates sit at about 0.062, close to the exact value; the Stage 1 bootstrap band runs from 0.011 to 0.200" loading="lazy" width="1024" height="544"><figcaption>Ideal and mitigated estimates land within 0.0004 of exact; unmitigated noise adds 0.0027. The orange band is Stage 1 uncertainty.</figcaption></figure>
       </div>
     </div>
   </div>
@@ -379,7 +379,7 @@ pre.code .c{color:#8D8D8D}
         <div style="margin-top:20px">
           <div class="eyebrow">Most likely QAOA outcomes (p = <span id="qp"></span>)</div>
           <div id="outcomes" style="margin-top:8px"></div>
-          <p class="note">Exact output distribution of the optimised circuit. Click an outcome to load it.</p>
+          <p class="note">Ideal statevector distribution of the optimised circuit (top 6 outcomes). Click one to load it.</p>
         </div>
       </div>
       <div class="stage stage--soft">
@@ -404,20 +404,20 @@ pre.code .c{color:#8D8D8D}
 
     <div class="try" style="margin-top:16px">
       <div class="card">
-        <div class="t-title">Stage 3: sample the circuit</div>
-        <p class="t-small" style="margin-top:6px">Each slider is one qubit's probability of reading 1, starting at our Stage 1 values. Move them and the exact answer updates; press Measure to draw shots.</p>
+        <div class="t-title">Stage 3: sample the same distribution</div>
+        <p class="t-small" style="margin-top:6px">Each slider is one qubit's probability of reading 1, starting at our Stage 1 values. Move them and the exact answer updates. Draw shots runs a classical sampler of the distribution the RY circuit produces, in your browser.</p>
         <div id="sliders" style="display:grid;gap:10px;margin-top:16px"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px">
           <div class="segmented" role="group" aria-label="Shots">
             <button aria-pressed="false" data-shots="1024">1,024</button><button aria-pressed="true" data-shots="8192">8,192</button><button aria-pressed="false" data-shots="200000">200k</button>
           </div>
-          <button class="btn btn-candy btn-sm" id="measure">Measure</button>
+          <button class="btn btn-candy btn-sm" id="measure">Draw shots</button>
           <button class="btn btn-outline btn-sm" id="reset-p">Reset</button>
         </div>
       </div>
       <div class="stage stage--soft">
         <div class="window">
-          <div class="window__bar"><div class="lights"><i></i><i></i><i></i></div><span class="window__title">Successes per shot</span></div>
+          <div class="window__bar"><div class="lights"><i></i><i></i><i></i></div><span class="window__title">Successes per shot (browser sampler)</span></div>
           <div style="padding:clamp(14px,2.4vw,22px)">
             <div class="readout" style="margin-top:0">
               <div><b id="m-exact"></b><span>exact P(≥3)</span></div>
@@ -450,13 +450,13 @@ pre.code .c{color:#8D8D8D}
         </table></div>
         <p class="note" id="cv-note"></p>
       </div>
-      <figure class="fig"><img src="figures/stage3_error_budget.png" alt="Stage 1 model uncertainty is about 0.049, shot noise 0.0017, noise bias 0.0027 and the residual after mitigation 0.0002" loading="lazy" width="1024" height="512"><figcaption id="eb-cap"></figcaption></figure>
+      <figure class="fig"><img src="figures/stage3_error_budget.png" alt="Stage 1 model uncertainty is about 0.049; shot noise at 20,000 shots 0.0017; noise bias 0.0027; residual after mitigation 0.0002" loading="lazy" width="1024" height="512"><figcaption id="eb-cap"></figcaption></figure>
       <div class="card">
         <div class="t-title">Stress test: limits tightened until they bind</div>
         <div class="tbl-wrap" style="margin-top:12px"><table class="tbl" id="stress-table">
-          <thead><tr><th>Scenario</th><th class="num">Feasible</th><th class="num">P(feasible) XY</th><th class="num">P(feasible) penalty</th><th class="num">Optimum sampled</th></tr></thead><tbody></tbody>
+          <thead><tr><th>Scenario</th><th class="num">Feasible</th><th class="num">P(feasible) XY / penalty</th><th class="num">P(optimum) XY</th><th class="num">Uniform guess</th></tr></thead><tbody></tbody>
         </table></div>
-        <p class="note">p = 2, 4,096 shots. Slack qubits and real ZZ couplings, checked against brute force. Source: <a class="t-accent" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/results/stage2_stress.json">results/stage2_stress.json</a>.</p>
+        <p class="note">p = 2. Slack qubits and real ZZ couplings. Keeping six picks raises the feasible share in every case, but P(optimum) only beats a uniform guess over feasible subsets in scenario A; in B and C it falls below it. COBYLA minimises the penalised energy, not P(optimum). Source: <a class="t-accent" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/results/stage2_stress.json">results/stage2_stress.json</a>.</p>
       </div>
       <div class="card">
         <div class="t-title">Noise and transpilation (IBM Kingston model)</div>
@@ -536,13 +536,13 @@ $('#ans-obj').textContent = `Expected net value ${f(D.objective, 3)} (the brute-
 $('#ans-p3').textContent = f(D.stage3.quantum);
 $('#ans-p3-sub').textContent = `±${f(D.stage3.se)} (1 s.e.). Exact value ${f(D.stage3.exact)}. Stage 1 bootstrap band ${f(D.stage3.budget.bootstrap_p_ge3_ci95[0], 3)} to ${f(D.stage3.budget.bootstrap_p_ge3_ci95[1], 3)}.`;
 const ratio = D.qaoa.p_opt / D.qaoa.uniform;
-$('#ans-qaoa').textContent = Math.round(ratio) + '× more often';
-$('#ans-qaoa-sub').textContent = `than a uniform guess over the 210 valid subsets: ${pct(D.qaoa.p_opt)} of shots at depth ${D.qaoa.p}, against ${pct(D.qaoa.uniform, 2)}.`;
+$('#ans-qaoa').textContent = pct(D.qaoa.p_opt) + ' of shots';
+$('#ans-qaoa-sub').textContent = `At depth ${D.qaoa.p}: ${Math.round(ratio)} times a uniform guess over the 210 valid subsets (${pct(D.qaoa.uniform, 2)}). The best sampled string is the optimum, seen in ${D.best_count.toLocaleString()} of 4,096 shots.`;
 $('#s2-chip').textContent = `P(optimum) ${pct(D.qaoa.p_opt)} at p = ${D.qaoa.p}`;
 
 /* stage 1 honest note + CV table */
 const cv = D.stage1.cv, lr = cv.find(r => r.model.startsWith('Logistic')), hy = cv.find(r => r.model.startsWith('Hybrid'));
-$('#s1-honest').textContent = `Result: logistic regression is the strongest single model (CV ROC-AUC ${f(lr.roc_auc, 3)}). The shipped blend puts weight ${f(D.stage1.w, 1)} on the quantum kernel and is statistically level with LR (${f(hy.roc_auc, 3)}). We report that as it is.`;
+$('#s1-honest').textContent = `Result: logistic regression is the strongest single model (CV ROC-AUC ${f(lr.roc_auc, 3)}). The shipped blend puts weight ${f(D.stage1.w, 1)} on the quantum kernel and is not distinguishable from LR in cross-validation, with LR nominally ahead (ROC-AUC ${f(hy.roc_auc, 3)} vs ${f(lr.roc_auc, 3)}). We report that as it is.`;
 $('#ev-pos').textContent = D.stage1.positives;
 $('#cv-table tbody').innerHTML = cv.map(r => `<tr class="${r.model.startsWith('Hybrid') ? 'is-on' : ''}"><td>${esc(r.model)}</td><td class="num">${f(r.roc_auc, 3)}</td><td class="num">${f(r.pr_auc, 3)}</td><td class="num">${f(r.brier, 4)}</td><td class="num">${f(r.log_loss, 3)}</td></tr>`).join('');
 $('#cv-note').innerHTML = `Mean over 50 outer folds. Hidden-label scores are unknown to us. Source: <a class="t-accent" href="https://github.com/YASASWIP012/atomiq-quantum-campaign/blob/master/results/stage1_cv_summary.csv">results/stage1_cv_summary.csv</a>.`;
@@ -555,7 +555,8 @@ $('#t-fragile').textContent = `Across 200 bootstrap refits, on average ${f(D.sta
 $('#t-lr').textContent = `Plain logistic regression picks the same top 10 and the same six (rank correlation ${f(D.stage3.lr.rank_correlation_spearman, 3)}). Its P(≥3) would be ${f(D.stage3.lr.lr_p_ge3_exact, 3)}.`;
 $('#stress-table tbody').innerHTML = D.stress.map(s => {
   const x = s.xy.find(r => r.p === 2), p = s.pen.find(r => r.p === 2);
-  return `<tr><td>${esc(s.name.split(': ')[1])}</td><td class="num">${s.feasible}/210</td><td class="num">${f(x.p_feasible, 2)}</td><td class="num">${f(p.p_feasible, 2)}</td><td class="num">${x.found_optimum_in_shots ? 'yes' : 'no'} / ${p.found_optimum_in_shots ? 'yes' : 'no'}</td></tr>`;
+  const u = 1 / s.feasible;
+  return `<tr><td>${esc(s.name.split(': ')[1])}</td><td class="num">${s.feasible}/210</td><td class="num">${f(x.p_feasible, 2)} / ${f(p.p_feasible, 2)}</td><td class="num">${f(x.p_optimal, 4)}</td><td class="num">${f(u, 4)} ${x.p_optimal > u ? '' : '(above QAOA)'}</td></tr>`;
 }).join('');
 const N = D.qaoa.noisy, rows = D.stage3.rows;
 const r3 = m => rows.find(r => r.method === m);
