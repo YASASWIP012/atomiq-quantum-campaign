@@ -79,9 +79,12 @@ class QFeatures:
         z = pre.transform(df)
         pca = PCA(n_components=N_QUBITS, random_state=SEEDS["model"]).fit(z)
         # PCA components are defined only up to sign, and LAPACK builds disagree (macOS vs Linux
-        # flipped component 6). The ZZ feature map is not sign-symmetric, so pin the convention:
-        # the largest-magnitude loading of every component is positive.
-        flip = np.sign(pca.components_[np.arange(N_QUBITS), np.abs(pca.components_).argmax(1)])
+        # flipped component 6). The ZZ feature map is not sign-symmetric, so pin a convention:
+        # orient each component so the training projections have positive skew (sum of cubes > 0).
+        # A "largest loading positive" rule is not enough: one-hot pairs give exactly opposite
+        # loadings (+a, -a), and float noise then decides which wins.
+        proj = (z - pca.mean_) @ pca.components_.T
+        flip = np.where((proj**3).sum(0) < 0, -1.0, 1.0)
         pca.components_ *= flip[:, None]
         scale = StandardScaler().fit(pca.transform(z))
         return cls(pre, pca, scale)

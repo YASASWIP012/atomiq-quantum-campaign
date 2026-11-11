@@ -1,52 +1,52 @@
 {
   "candidate_ids_top10": [
-    "C0031",
     "C0081",
-    "C0256",
     "C0028",
-    "C0112",
+    "C0046",
     "C0229",
-    "C0338",
-    "C0079",
-    "C0088",
-    "C0193"
+    "C0378",
+    "C0183",
+    "C0170",
+    "C0134",
+    "C0007",
+    "C0031"
   ],
   "qubit_to_customer": {
-    "0": "C0031",
-    "1": "C0081",
-    "2": "C0256",
-    "3": "C0028",
-    "4": "C0112",
-    "5": "C0229",
-    "6": "C0338",
-    "7": "C0079",
-    "8": "C0088",
-    "9": "C0193"
+    "0": "C0081",
+    "1": "C0028",
+    "2": "C0046",
+    "3": "C0229",
+    "4": "C0378",
+    "5": "C0183",
+    "6": "C0170",
+    "7": "C0134",
+    "8": "C0007",
+    "9": "C0031"
   },
   "selected_ids": [
-    "C0031",
-    "C0256",
     "C0028",
-    "C0338",
-    "C0079",
-    "C0088"
+    "C0229",
+    "C0183",
+    "C0170",
+    "C0007",
+    "C0031"
   ],
-  "selected_bitstring_qiskit_order": "0111001101",
+  "selected_bitstring_qiskit_order": "1101101010",
   "selected_bitstring_note": "Qiskit big-endian key; rightmost character is qubit 0 = rank-1 candidate",
-  "total_budget_used": 14,
+  "total_budget_used": 13,
   "budget_limit": 25,
   "total_capacity_used": 15,
   "capacity_limit": 22,
-  "objective_value": 6.671081907546185,
+  "objective_value": 4.16976930565333,
   "brute_force_optimal_ids": [
-    "C0031",
-    "C0256",
     "C0028",
-    "C0338",
-    "C0079",
-    "C0088"
+    "C0229",
+    "C0183",
+    "C0170",
+    "C0007",
+    "C0031"
   ],
-  "brute_force_optimal_objective": 6.671081907546185,
+  "brute_force_optimal_objective": 4.16976930565333,
   "optimality_gap": 0.0,
   "feasible": true,
   "solver": "constraint-native QAOA p=3 (Dicke + XY ring), statevector, 4096 shots",
@@ -54,10 +54,10 @@
     "budget_limit": 25,
     "capacity_limit": 22,
     "max_budget_any_6": 21,
-    "min_budget_any_6": 13,
+    "min_budget_any_6": 12,
     "budget_redundant": true,
     "max_capacity_any_6": 17,
-    "min_capacity_any_6": 7,
+    "min_capacity_any_6": 8,
     "capacity_redundant": true
   },
   "formulation": {
@@ -65,33 +65,33 @@
     "cardinality": "enforced exactly by Dicke(10,6) initial state + Hamming-weight-preserving XY ring mixer (no penalty, no slack)",
     "budget": "redundant: the 6 most expensive candidates cost <= 25 (presolve proof)",
     "capacity": "redundant (presolve)",
-    "penalty_weight_lambda": 4.165473064427385,
-    "objective_scale": 2.646635969248768,
+    "penalty_weight_lambda": 4.5449084369632455,
+    "objective_scale": 2.1362502789413886,
     "lambda_rule": "lam = 1 + sum_i |v_i|/max|v|: any violation costs more than the whole objective range",
     "ising_h": [
-      0.10916199076957943,
-      -0.1260675465744721,
+      -0.25331038440064524,
+      0.06226982486748855,
+      -0.08329513258772292,
+      0.03781137839173369,
+      -0.22622870138940201,
+      0.0009911322307919203,
       0.5,
-      0.07913871301586314,
-      0.031103505935111745,
-      0.0634519699745993,
-      0.15859713027610117,
-      0.14203250011773097,
-      0.2713642407183324,
-      -0.10181893483190187
+      -0.1443915841377142,
+      0.419519492292319,
+      -0.04463658818380536
     ],
     "ising_J": {},
-    "ising_offset": -1.126963569400944
+    "ising_offset": -0.2687294370830434
   },
   "qaoa": {
     "best_p": 3,
     "optimised_params_beta_then_gamma": [
-      2.3662742832470025,
-      2.7050168579935683,
-      2.8460443891690104,
-      1.7077499080642067,
-      3.286639814593541,
-      4.0051396445984775
+      2.544874209487844,
+      -0.17074188003782584,
+      3.015707958275571,
+      1.4448923520291046,
+      2.2015189063682743,
+      1.7914776169240003
     ],
     "optimizer": "COBYLA, 4 random restarts + INTERP warm start",
     "seed": 31
@@ -102,60 +102,60 @@
       "ansatz": "Dicke only (uniform over 210)",
       "p_feasible": 1.0000000000000004,
       "p_hamming_weight_6": 1.0000000000000004,
-      "p_optimal": 0.00476190476190476,
-      "expected_objective_feasible_only": 3.579194782571423,
-      "approx_ratio": 0.5365238850571921
+      "p_optimal": 0.004761904761904766,
+      "expected_objective_feasible_only": 0.6888880019140965,
+      "approx_ratio": 0.1652100995084091
     },
     {
       "p": 1,
       "ansatz": "Dicke + XY ring",
-      "energy": -1.8812729769590124,
+      "energy": -1.3108809651227737,
       "params": [
-        2.6744613682670297,
-        1.577101461414178
+        2.6283565488989207,
+        1.589949661686082
       ],
-      "n_evals": 58,
-      "p_feasible": 1.0000000000000013,
-      "p_hamming_weight_6": 1.0000000000000013,
-      "p_optimal": 0.012678860651976981,
-      "expected_objective_feasible_only": 4.979044728795425,
-      "approx_ratio": 0.7463624038498518
+      "n_evals": 81,
+      "p_feasible": 1.0000000000000009,
+      "p_hamming_weight_6": 1.0000000000000009,
+      "p_optimal": 0.08689393926695203,
+      "expected_objective_feasible_only": 2.8003698274024797,
+      "approx_ratio": 0.671588671249934
     },
     {
       "p": 2,
       "ansatz": "Dicke + XY ring",
-      "energy": -1.9817110625702135,
+      "energy": -1.469012386590896,
       "params": [
-        2.5375110052800736,
-        2.86060711322184,
-        1.4247886624173438,
-        2.822882733816393
+        0.39460694911908845,
+        2.9169260439314346,
+        -1.8335552488565277,
+        3.615711905112797
       ],
       "n_evals": 500,
-      "p_feasible": 1.0000000000000002,
-      "p_hamming_weight_6": 1.0000000000000002,
-      "p_optimal": 0.06510959508611955,
-      "expected_objective_feasible_only": 5.2448677788565226,
-      "approx_ratio": 0.7862094711989132
+      "p_feasible": 1.0000000000000013,
+      "p_hamming_weight_6": 1.0000000000000013,
+      "p_optimal": 0.13510062618070007,
+      "expected_objective_feasible_only": 3.1381781206231523,
+      "approx_ratio": 0.7526023361456575
     },
     {
       "p": 3,
       "ansatz": "Dicke + XY ring",
-      "energy": -2.05877813378048,
+      "energy": -1.4315722767337933,
       "params": [
-        2.3662742832470025,
-        2.7050168579935683,
-        2.8460443891690104,
-        1.7077499080642067,
-        3.286639814593541,
-        4.0051396445984775
+        2.544874209487844,
+        -0.17074188003782584,
+        3.015707958275571,
+        1.4448923520291046,
+        2.2015189063682743,
+        1.7914776169240003
       ],
       "n_evals": 750,
-      "p_feasible": 0.9999999999999998,
-      "p_hamming_weight_6": 0.9999999999999998,
-      "p_optimal": 0.1572899835036084,
-      "expected_objective_feasible_only": 5.44883626156627,
-      "approx_ratio": 0.8167844941916638
+      "p_feasible": 1.0000000000000018,
+      "p_hamming_weight_6": 1.0000000000000018,
+      "p_optimal": 0.14734416318012034,
+      "expected_objective_feasible_only": 3.05819667549732,
+      "approx_ratio": 0.7334210723243247
     }
   ],
   "penalty_baseline": [
@@ -163,58 +163,58 @@
       "p": 1,
       "ansatz": "penalty QUBO + X mixer",
       "params": [
-        0.2493722227434466,
-        1.4397893370327728
+        0.3520444015182409,
+        2.12618402745343
       ],
-      "p_feasible": 0.3969456065923067,
-      "p_hamming_weight_6": 0.3969456065923067,
-      "p_optimal": 0.0007325494143605718,
-      "expected_objective_feasible_only": 2.9131501350583826,
-      "approx_ratio": 0.4366833109578657
+      "p_feasible": 0.4365571661241202,
+      "p_hamming_weight_6": 0.4365571661241202,
+      "p_optimal": 0.012316178527680294,
+      "expected_objective_feasible_only": 1.6520219559456137,
+      "approx_ratio": 0.3961902529489628
     },
     {
       "p": 2,
       "ansatz": "penalty QUBO + X mixer",
       "params": [
-        1.4335819203223739,
-        1.8239558334745063,
-        3.0431374759151595,
-        0.784135245780886
+        0.47770246942467853,
+        0.20273375784680234,
+        2.1072022922458267,
+        2.0226561403631016
       ],
-      "p_feasible": 0.5198393715319127,
-      "p_hamming_weight_6": 0.5198393715319127,
-      "p_optimal": 0.01497836120388064,
-      "expected_objective_feasible_only": 4.559146169867042,
-      "approx_ratio": 0.6834193063511683
+      "p_feasible": 0.5643453254216098,
+      "p_hamming_weight_6": 0.5643453254216098,
+      "p_optimal": 0.01784312202754546,
+      "expected_objective_feasible_only": 2.335967304005739,
+      "approx_ratio": 0.5602149981867484
     }
   ],
   "random_feasible_baseline_p_optimal": 0.004761904761904762,
-  "dicke_only_baseline_p_optimal": 0.00476190476190476,
+  "dicke_only_baseline_p_optimal": 0.004761904761904766,
   "measured_counts_top20": {
-    "0111001101": 679,
-    "1101001101": 252,
-    "0101101101": 232,
-    "0110101101": 212,
-    "1101010101": 185,
-    "0111100101": 139,
-    "0101001111": 125,
-    "0111101100": 120,
-    "1101100101": 116,
-    "1111001001": 107,
-    "0111011100": 90,
-    "0101100111": 86,
-    "0101110101": 85,
-    "0101010111": 84,
-    "0111001110": 68,
-    "1110001101": 66,
-    "1111001100": 65,
-    "1111000101": 63,
-    "1101000111": 59,
-    "0110001111": 51
+    "1101101010": 578,
+    "0111101010": 393,
+    "0101101110": 391,
+    "0101111010": 308,
+    "1001101110": 191,
+    "1101001110": 189,
+    "1101101100": 144,
+    "1111001010": 142,
+    "1101100110": 113,
+    "1111100100": 90,
+    "0001111110": 73,
+    "1001111010": 62,
+    "1111100010": 62,
+    "1101010110": 61,
+    "0111100110": 58,
+    "1111101000": 56,
+    "1100101110": 55,
+    "1101001011": 54,
+    "0111111000": 52,
+    "1101111000": 45
   },
   "best_sampled": {
-    "bitstring": "0111001101",
-    "count": 679
+    "bitstring": "1101101010",
+    "count": 578
   },
   "noisy_simulation": {
     "1": {
@@ -241,9 +241,9 @@
         "swap_count": 107,
         "basis_ops": {
           "sx": 1153,
-          "rz": 820,
+          "rz": 822,
           "cz": 580,
-          "x": 109,
+          "x": 107,
           "measure": 10,
           "barrier": 1
         },
@@ -252,15 +252,15 @@
         "backend": "fake_kingston"
       },
       "raw": {
-        "p_feasible": 0.432373046875,
-        "p_hamming_weight_6": 0.432373046875,
-        "p_optimal": 0.00341796875
+        "p_feasible": 0.43017578125,
+        "p_hamming_weight_6": 0.43017578125,
+        "p_optimal": 0.024658203125
       },
       "postselected_weight6": {
         "p_feasible_given_weight6": 1.0,
-        "p_optimal_given_weight6": 0.007905138339920948
+        "p_optimal_given_weight6": 0.05732122587968218
       },
-      "best_feasible_sampled_objective": 6.671081907546185,
+      "best_feasible_sampled_objective": 4.16976930565333,
       "finds_optimum": true,
       "noise_model": "AerSimulator.from_backend(FakeKingston)",
       "shots": 4096,
@@ -284,15 +284,15 @@
         ],
         "original_depth": 437,
         "original_2q_gates": 396,
-        "transpiled_depth": 1344,
-        "transpiled_1q_gates": 2435,
+        "transpiled_depth": 1343,
+        "transpiled_1q_gates": 2425,
         "transpiled_2q_gates": 663,
         "swap_count": 119,
         "basis_ops": {
           "sx": 1365,
-          "rz": 968,
+          "rz": 955,
           "cz": 663,
-          "x": 102,
+          "x": 105,
           "measure": 10,
           "barrier": 1
         },
@@ -301,15 +301,15 @@
         "backend": "fake_kingston"
       },
       "raw": {
-        "p_feasible": 0.38818359375,
-        "p_hamming_weight_6": 0.38818359375,
-        "p_optimal": 0.03955078125
+        "p_feasible": 0.385009765625,
+        "p_hamming_weight_6": 0.385009765625,
+        "p_optimal": 0.033935546875
       },
       "postselected_weight6": {
         "p_feasible_given_weight6": 1.0,
-        "p_optimal_given_weight6": 0.1018867924528302
+        "p_optimal_given_weight6": 0.08814204185161699
       },
-      "best_feasible_sampled_objective": 6.671081907546185,
+      "best_feasible_sampled_objective": 4.16976930565333,
       "finds_optimum": true,
       "noise_model": "AerSimulator.from_backend(FakeKingston)",
       "shots": 4096,
@@ -319,5 +319,5 @@
   "ibm_hardware": null,
   "n_feasible_subsets": 210,
   "n_cardinality_subsets": 210,
-  "runtime_s": 201.7
+  "runtime_s": 381.3
 }

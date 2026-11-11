@@ -103,5 +103,7 @@ def test_pca_sign_convention_is_pinned():
     from atomiq.stage1 import QFeatures
 
     train, _ = load_stage1()
-    comps = QFeatures.fit(train.drop(columns="y")).pca.components_
-    assert all(r[np.abs(r).argmax()] > 0 for r in comps)
+    X = train.drop(columns="y")
+    qf = QFeatures.fit(X)
+    proj = qf.pca.transform(qf.pre.transform(X))
+    assert ((proj**3).sum(0) > 0).all()
