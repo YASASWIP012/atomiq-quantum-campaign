@@ -1,0 +1,320 @@
+{
+  "candidate_ids_top10": [
+    "C0031",
+    "C0081",
+    "C0256",
+    "C0028",
+    "C0112",
+    "C0229",
+    "C0338",
+    "C0079",
+    "C0088",
+    "C0193"
+  ],
+  "qubit_to_customer": {
+    "0": "C0031",
+    "1": "C0081",
+    "2": "C0256",
+    "3": "C0028",
+    "4": "C0112",
+    "5": "C0229",
+    "6": "C0338",
+    "7": "C0079",
+    "8": "C0088",
+    "9": "C0193"
+  },
+  "selected_ids": [
+    "C0031",
+    "C0256",
+    "C0028",
+    "C0338",
+    "C0079",
+    "C0088"
+  ],
+  "selected_bitstring_qiskit_order": "0111001101",
+  "selected_bitstring_note": "Qiskit big-endian key; rightmost character is qubit 0 = rank-1 candidate",
+  "total_budget_used": 14,
+  "budget_limit": 25,
+  "total_capacity_used": 15,
+  "capacity_limit": 22,
+  "objective_value": 6.671081907546185,
+  "brute_force_optimal_ids": [
+    "C0031",
+    "C0256",
+    "C0028",
+    "C0338",
+    "C0079",
+    "C0088"
+  ],
+  "brute_force_optimal_objective": 6.671081907546185,
+  "optimality_gap": 0.0,
+  "feasible": true,
+  "solver": "constraint-native QAOA p=3 (Dicke + XY ring), statevector, 4096 shots",
+  "presolve": {
+    "max_budget_any_6": 21,
+    "budget_redundant": true,
+    "max_capacity_any_6": 17,
+    "min_capacity_any_6": 7,
+    "capacity_redundant": true
+  },
+  "formulation": {
+    "objective": "maximise sum_i (p_i * deposit_i - cost_i) x_i  ==  minimise -sum_i v_i x_i / max|v|",
+    "cardinality": "enforced exactly by Dicke(10,6) initial state + Hamming-weight-preserving XY ring mixer (no penalty, no slack)",
+    "budget": "redundant: the 6 most expensive candidates cost <= 25 (presolve proof)",
+    "capacity": "redundant (presolve)",
+    "penalty_weight_lambda": 4.165473064427385,
+    "objective_scale": 2.646635969248768,
+    "lambda_rule": "lam = 1 + sum_i |v_i|/max|v|: any violation costs more than the whole objective range",
+    "ising_h": [
+      0.10916199076957943,
+      -0.1260675465744721,
+      0.5,
+      0.07913871301586314,
+      0.031103505935111745,
+      0.0634519699745993,
+      0.15859713027610117,
+      0.14203250011773097,
+      0.2713642407183324,
+      -0.10181893483190187
+    ],
+    "ising_J": {},
+    "ising_offset": -1.126963569400944
+  },
+  "qaoa": {
+    "best_p": 3,
+    "optimised_params_beta_then_gamma": [
+      2.3662742832470025,
+      2.7050168579935683,
+      2.8460443891690104,
+      1.7077499080642067,
+      3.286639814593541,
+      4.0051396445984775
+    ],
+    "optimizer": "COBYLA, 4 random restarts + INTERP warm start",
+    "seed": 31
+  },
+  "depth_sweep": [
+    {
+      "p": 0,
+      "ansatz": "Dicke only (uniform over 210)",
+      "p_feasible": 1.0000000000000004,
+      "p_hamming_weight_6": 1.0000000000000004,
+      "p_optimal": 0.00476190476190476,
+      "expected_objective_feasible_only": 3.579194782571423,
+      "approx_ratio": 0.5365238850571921
+    },
+    {
+      "p": 1,
+      "ansatz": "Dicke + XY ring",
+      "energy": -1.8812729769590124,
+      "params": [
+        2.6744613682670297,
+        1.577101461414178
+      ],
+      "n_evals": 58,
+      "p_feasible": 1.0000000000000013,
+      "p_hamming_weight_6": 1.0000000000000013,
+      "p_optimal": 0.012678860651976981,
+      "expected_objective_feasible_only": 4.979044728795425,
+      "approx_ratio": 0.7463624038498518
+    },
+    {
+      "p": 2,
+      "ansatz": "Dicke + XY ring",
+      "energy": -1.9817110625702135,
+      "params": [
+        2.5375110052800736,
+        2.86060711322184,
+        1.4247886624173438,
+        2.822882733816393
+      ],
+      "n_evals": 500,
+      "p_feasible": 1.0000000000000002,
+      "p_hamming_weight_6": 1.0000000000000002,
+      "p_optimal": 0.06510959508611955,
+      "expected_objective_feasible_only": 5.2448677788565226,
+      "approx_ratio": 0.7862094711989132
+    },
+    {
+      "p": 3,
+      "ansatz": "Dicke + XY ring",
+      "energy": -2.05877813378048,
+      "params": [
+        2.3662742832470025,
+        2.7050168579935683,
+        2.8460443891690104,
+        1.7077499080642067,
+        3.286639814593541,
+        4.0051396445984775
+      ],
+      "n_evals": 750,
+      "p_feasible": 0.9999999999999998,
+      "p_hamming_weight_6": 0.9999999999999998,
+      "p_optimal": 0.1572899835036084,
+      "expected_objective_feasible_only": 5.44883626156627,
+      "approx_ratio": 0.8167844941916638
+    }
+  ],
+  "penalty_baseline": [
+    {
+      "p": 1,
+      "ansatz": "penalty QUBO + X mixer",
+      "params": [
+        0.2493722227434466,
+        1.4397893370327728
+      ],
+      "p_feasible": 0.3969456065923067,
+      "p_hamming_weight_6": 0.3969456065923067,
+      "p_optimal": 0.0007325494143605718,
+      "expected_objective_feasible_only": 2.9131501350583826,
+      "approx_ratio": 0.4366833109578657
+    },
+    {
+      "p": 2,
+      "ansatz": "penalty QUBO + X mixer",
+      "params": [
+        1.4335819203223739,
+        1.8239558334745063,
+        3.0431374759151595,
+        0.784135245780886
+      ],
+      "p_feasible": 0.5198393715319127,
+      "p_hamming_weight_6": 0.5198393715319127,
+      "p_optimal": 0.01497836120388064,
+      "expected_objective_feasible_only": 4.559146169867042,
+      "approx_ratio": 0.6834193063511683
+    }
+  ],
+  "random_feasible_baseline_p_optimal": 0.004761904761904762,
+  "dicke_only_baseline_p_optimal": 0.00476190476190476,
+  "measured_counts_top20": {
+    "0111001101": 679,
+    "1101001101": 252,
+    "0101101101": 232,
+    "0110101101": 212,
+    "1101010101": 185,
+    "0111100101": 139,
+    "0101001111": 125,
+    "0111101100": 120,
+    "1101100101": 116,
+    "1111001001": 107,
+    "0111011100": 90,
+    "0101100111": 86,
+    "0101110101": 85,
+    "0101010111": 84,
+    "0111001110": 68,
+    "1110001101": 66,
+    "1111001100": 65,
+    "1111000101": 63,
+    "1101000111": 59,
+    "0110001111": 51
+  },
+  "best_sampled": {
+    "bitstring": "0111001101",
+    "count": 679
+  },
+  "noisy_simulation": {
+    "1": {
+      "transpile": {
+        "logical_qubits": 10,
+        "physical_qubits_used": 10,
+        "physical_layout": [
+          22,
+          3,
+          16,
+          24,
+          25,
+          23,
+          36,
+          20,
+          41,
+          21
+        ],
+        "original_depth": 395,
+        "original_2q_gates": 356,
+        "transpiled_depth": 1268,
+        "transpiled_1q_gates": 2082,
+        "transpiled_2q_gates": 580,
+        "swap_count": 107,
+        "basis_ops": {
+          "sx": 1153,
+          "rz": 820,
+          "cz": 580,
+          "x": 109,
+          "measure": 10,
+          "barrier": 1
+        },
+        "optimization_level": 3,
+        "seed_transpiler": 42,
+        "backend": "fake_kingston"
+      },
+      "raw": {
+        "p_feasible": 0.432373046875,
+        "p_hamming_weight_6": 0.432373046875,
+        "p_optimal": 0.00341796875
+      },
+      "postselected_weight6": {
+        "p_feasible_given_weight6": 1.0,
+        "p_optimal_given_weight6": 0.007905138339920948
+      },
+      "best_feasible_sampled_objective": 6.671081907546185,
+      "finds_optimum": true,
+      "noise_model": "AerSimulator.from_backend(FakeKingston)",
+      "shots": 4096,
+      "seed_simulator": 8
+    },
+    "3": {
+      "transpile": {
+        "logical_qubits": 10,
+        "physical_qubits_used": 10,
+        "physical_layout": [
+          71,
+          73,
+          74,
+          59,
+          55,
+          54,
+          53,
+          52,
+          51,
+          58
+        ],
+        "original_depth": 437,
+        "original_2q_gates": 396,
+        "transpiled_depth": 1344,
+        "transpiled_1q_gates": 2435,
+        "transpiled_2q_gates": 663,
+        "swap_count": 119,
+        "basis_ops": {
+          "sx": 1365,
+          "rz": 968,
+          "cz": 663,
+          "x": 102,
+          "measure": 10,
+          "barrier": 1
+        },
+        "optimization_level": 3,
+        "seed_transpiler": 42,
+        "backend": "fake_kingston"
+      },
+      "raw": {
+        "p_feasible": 0.38818359375,
+        "p_hamming_weight_6": 0.38818359375,
+        "p_optimal": 0.03955078125
+      },
+      "postselected_weight6": {
+        "p_feasible_given_weight6": 1.0,
+        "p_optimal_given_weight6": 0.1018867924528302
+      },
+      "best_feasible_sampled_objective": 6.671081907546185,
+      "finds_optimum": true,
+      "noise_model": "AerSimulator.from_backend(FakeKingston)",
+      "shots": 4096,
+      "seed_simulator": 8
+    }
+  },
+  "ibm_hardware": null,
+  "n_feasible_subsets": 210,
+  "n_cardinality_subsets": 210,
+  "runtime_s": 254.9
+}
