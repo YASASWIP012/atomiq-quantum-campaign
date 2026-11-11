@@ -279,7 +279,7 @@ src/atomiq/
   stage3.py                   encoding circuit, exact/Monte Carlo/Aer/noisy/mitigated estimates, error budget
 scripts/
   check_submission.py         25 consistency checks across the three stages
-  make_video.py               builds the narrated walkthrough video (ElevenLabs voice) from the deck and live plots
+  make_video.py               builds the narrated walkthrough video from the deck and live plots (ElevenLabs if a key is set, else the macOS voice)
   run_hardware.py             optional real-QPU job (ibm_kingston)
   make_deck.py                builds presentation/deck.pdf from the result files
 tests/                        25 tests: statevector equivalence, Dicke state, mixers, phase separator, fast simulator,
