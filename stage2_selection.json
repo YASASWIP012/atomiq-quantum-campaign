@@ -319,5 +319,5 @@
   "ibm_hardware": null,
   "n_feasible_subsets": 210,
   "n_cardinality_subsets": 210,
-  "runtime_s": 188.5
+  "runtime_s": 201.7
 }

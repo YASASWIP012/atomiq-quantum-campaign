@@ -95,3 +95,13 @@ def test_tensored_readout_inversion_recovers_true_distribution():
     counts = {format(i, f"0{n}b"): observed[i] * 1e6 for i in range(2**n)}
     rec = tensored_mitigate(counts, mats)
     assert np.allclose(rec, true, atol=1e-9)
+
+
+def test_pca_sign_convention_is_pinned():
+    # The ZZ feature map is not sign-symmetric, so PCA signs must not depend on the LAPACK build.
+    from atomiq.common import load_stage1
+    from atomiq.stage1 import QFeatures
+
+    train, _ = load_stage1()
+    comps = QFeatures.fit(train.drop(columns="y")).pca.components_
+    assert all(r[np.abs(r).argmax()] > 0 for r in comps)

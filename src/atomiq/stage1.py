@@ -78,6 +78,11 @@ class QFeatures:
         pre = make_preprocessor().fit(df)
         z = pre.transform(df)
         pca = PCA(n_components=N_QUBITS, random_state=SEEDS["model"]).fit(z)
+        # PCA components are defined only up to sign, and LAPACK builds disagree (macOS vs Linux
+        # flipped component 6). The ZZ feature map is not sign-symmetric, so pin the convention:
+        # the largest-magnitude loading of every component is positive.
+        flip = np.sign(pca.components_[np.arange(N_QUBITS), np.abs(pca.components_).argmax(1)])
+        pca.components_ *= flip[:, None]
         scale = StandardScaler().fit(pca.transform(z))
         return cls(pre, pca, scale)
 
