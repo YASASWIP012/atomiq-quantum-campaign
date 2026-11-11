@@ -57,7 +57,7 @@ def main():
     hw = s3.get("hardware")
     hw_row = next((r for r in s3["results"] if r["method"] == "ibm_hardware_unmitigated"), None)
     with PdfPages(OUT) as pdf:
-        slide(pdf, "Six customers, one campaign: a hybrid quantum-classical pipeline", [
+        slide(pdf, "Six customers, one campaign", [
             f"Answer: contact {', '.join(s2['selected_ids'])}.",
             f"P(at least 3 of 6 subscribe) = {s3['quantum_estimate_p_ge3']:.4f} from the quantum circuit "
             f"(exact {s3['exact_p_ge3']:.4f}, Stage-1 bootstrap 95% band "
@@ -92,18 +92,20 @@ def main():
             f"P(feasible) = {s2['depth_sweep'][s2['qaoa']['best_p']]['p_feasible']:.3f}.",
         ], image="figures/stage2_qaoa_depth.png")
         nz = s2["noisy_simulation"]
-        k1 = sorted(nz, key=int)[0]
+        k1 = str(s2["qaoa"]["best_p"])
         t = nz[k1]["transpile"]
         hw2 = s2.get("ibm_hardware")
         slide(pdf, "Noise, transpilation and hardware", [
             f"Stage 2 p={k1} on {t['backend']}: depth {t['transpiled_depth']}, {t['transpiled_2q_gates']} two-qubit gates, "
-            f"{t['swap_count']} SWAPs. Noisy P(feasible) {nz[k1]['raw']['p_feasible']:.3f}; "
-            f"after weight-6 post-selection {nz[k1]['postselected_weight6']['p_feasible_given_weight6']:.3f}.",
+            f"{t['swap_count']} SWAPs. Under FakeKingston noise, {nz[k1]['raw']['p_hamming_weight_6']:.0%} of shots keep weight 6; "
+            f"P(optimum) = {nz[k1]['raw']['p_optimal']:.3f} raw and {nz[k1]['postselected_weight6']['p_optimal_given_weight6']:.3f} "
+            f"after weight-6 post-selection (uniform guess {s2['random_feasible_baseline_p_optimal']:.4f}).",
             f"Stage 3 transpiles to depth {s3['transpilation']['transpiled_depth']} with no two-qubit gates, so readout "
             "error dominates; per-qubit readout inversion removes most of the bias.",
             (f"Real QPU: {hw['backend']}, job {hw['job_id']}, P(>=3) = {hw_row['p_ge3']:.4f}." if hw and hw_row else
              "Real-QPU run: scripts/run_hardware.py (one job, about 16k shots) is ready but was not run for this submission."),
-            (f"Stage 2 on {hw2['backend']}: raw P(feasible) {hw2['raw']['p_feasible']:.3f}." if hw2 else ""),
+        ] + ([f"Stage 2 p=1 on {hw2['backend']}: {hw2['raw']['p_hamming_weight_6']:.0%} of shots keep weight 6; "
+              f"P(optimum | weight 6) = {hw2['postselected_weight6']['p_optimal_given_weight6']:.3f}."] if hw2 else []) + [
         ], image="figures/stage3_estimates.png")
         eb = s3["error_budget"]
         slide(pdf, "Error propagation across stages", [
@@ -118,7 +120,7 @@ def main():
             f"Expected net value of the chosen six: {s2['objective_value']:.2f} (deposit units), using "
             f"{s2['total_budget_used']}/{s2['budget_limit']} budget and {s2['total_capacity_used']}/{s2['capacity_limit']} capacity.",
             f"Hitting 3 conversions from 6 calls is unlikely (about {s3['exact_p_ge3']:.0%}). Plan for 1 to 2 conversions, "
-            "or widen the call list if 3 is a hard target.",
+            "or widen the list: going down our ranking, 3+ subscribers becomes an even bet at about 17 calls.",
             "The model is weakly informative with 35 positives; collect outcome data from this campaign before "
             "trusting finer rankings.",
             "Quantum methods here are correct and verifiable, and they match classical answers; we claim no speed-up.",
