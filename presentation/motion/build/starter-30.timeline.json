@@ -1,0 +1,532 @@
+{
+ "id": "starter-30",
+ "meta": {
+  "fps": 60,
+  "bpm": 120,
+  "beatsPerBar": 4,
+  "tailBeats": 0,
+  "title": "Starter — short launch (26 s)",
+  "chords": [
+   "Cmaj7",
+   "Am7",
+   "Fmaj7",
+   "G"
+  ],
+  "target": 26,
+  "framesPerBeat": 30,
+  "totalBeats": 52,
+  "durationInFrames": 1560,
+  "seconds": 26
+ },
+ "brand": {
+  "bg": "#F5F4F1",
+  "surface": "#FFFFFF",
+  "ink": "#121214",
+  "muted": "#6E6E78",
+  "line": "#E5E3DE",
+  "accent": "#3B5BFF",
+  "accentInk": "#FFFFFF",
+  "dark": "#0E0F13",
+  "darkInk": "#F3F3F6",
+  "fontDisplay": "Inter",
+  "fontText": "Inter",
+  "fontMono": "Geist Mono",
+  "fontSerif": "Instrument Serif",
+  "emphasis": "accent",
+  "tracking": -0.045,
+  "weight": 750,
+  "look": "flat",
+  "aurora": [
+   "#B7C4FF",
+   "#E6CCFF",
+   "#FFD9C7",
+   "#C9DCFF",
+   "#FFFFFF"
+  ],
+  "auroraStrength": 0.4
+ },
+ "scenes": [
+  {
+   "id": "hook",
+   "type": "Hook",
+   "index": 0,
+   "startBeat": 0,
+   "beats": 8,
+   "start": 0,
+   "end": 240,
+   "dur": 240,
+   "in": {
+    "type": "cut",
+    "ms": 0
+   },
+   "inLen": 0,
+   "tone": "light",
+   "music": "sparse",
+   "events": {
+    "line0": 0,
+    "line1": 30,
+    "swap1": 60,
+    "swap2": 90
+   },
+   "eventBeats": {
+    "line0": 0,
+    "line1": 1,
+    "swap1": 2,
+    "swap2": 3
+   },
+   "out": {
+    "type": "iris",
+    "ms": 520
+   },
+   "outLen": 31
+  },
+  {
+   "id": "reveal",
+   "type": "Reveal",
+   "index": 1,
+   "startBeat": 8,
+   "beats": 4,
+   "start": 240,
+   "end": 360,
+   "dur": 120,
+   "in": {
+    "type": "iris",
+    "ms": 520
+   },
+   "inLen": 31,
+   "tone": "light",
+   "music": "build",
+   "events": {
+    "mark": 0,
+    "name": 15,
+    "tagline": 45
+   },
+   "eventBeats": {
+    "mark": 0,
+    "name": 0.5,
+    "tagline": 1.5
+   },
+   "out": {
+    "type": "push",
+    "ms": 560
+   },
+   "outLen": 34
+  },
+  {
+   "id": "plan",
+   "type": "Feature",
+   "index": 2,
+   "startBeat": 12,
+   "beats": 8,
+   "start": 360,
+   "end": 600,
+   "dur": 240,
+   "in": {
+    "type": "push",
+    "ms": 560
+   },
+   "inLen": 34,
+   "tone": "light",
+   "music": "full",
+   "events": {
+    "caption": 0,
+    "sentence": 15,
+    "trigger": 30,
+    "react": 60,
+    "payoff": 90
+   },
+   "eventBeats": {
+    "caption": 0,
+    "sentence": 0.5,
+    "trigger": 1,
+    "react": 2,
+    "payoff": 3
+   },
+   "out": {
+    "type": "whip",
+    "ms": 240
+   },
+   "outLen": 14
+  },
+  {
+   "id": "montage",
+   "type": "Montage",
+   "index": 3,
+   "startBeat": 20,
+   "beats": 4,
+   "start": 600,
+   "end": 720,
+   "dur": 120,
+   "in": {
+    "type": "whip",
+    "ms": 240
+   },
+   "inLen": 14,
+   "tone": "light",
+   "music": "full",
+   "events": {
+    "item0": 0,
+    "item1": 15,
+    "item2": 30,
+    "item3": 45,
+    "final": 60
+   },
+   "eventBeats": {
+    "item0": 0,
+    "item1": 0.5,
+    "item2": 1,
+    "item3": 1.5,
+    "final": 2
+   },
+   "out": {
+    "type": "zoom",
+    "ms": 480
+   },
+   "outLen": 29
+  },
+  {
+   "id": "focus",
+   "type": "Feature",
+   "index": 4,
+   "startBeat": 24,
+   "beats": 8,
+   "start": 720,
+   "end": 960,
+   "dur": 240,
+   "in": {
+    "type": "zoom",
+    "ms": 480
+   },
+   "inLen": 29,
+   "tone": "dark",
+   "music": "full",
+   "events": {
+    "caption": 0,
+    "sentence": 15,
+    "trigger": 30,
+    "react": 60,
+    "payoff": 90
+   },
+   "eventBeats": {
+    "caption": 0,
+    "sentence": 0.5,
+    "trigger": 1,
+    "react": 2,
+    "payoff": 3
+   },
+   "out": {
+    "type": "wipe",
+    "ms": 460
+   },
+   "outLen": 28
+  },
+  {
+   "id": "stat",
+   "type": "Stat",
+   "index": 5,
+   "startBeat": 32,
+   "beats": 4,
+   "start": 960,
+   "end": 1080,
+   "dur": 120,
+   "in": {
+    "type": "wipe",
+    "ms": 460
+   },
+   "inLen": 28,
+   "tone": "light",
+   "music": "build",
+   "events": {
+    "count": 0,
+    "label": 15,
+    "land": 45
+   },
+   "eventBeats": {
+    "count": 0,
+    "label": 0.5,
+    "land": 1.5
+   },
+   "out": {
+    "type": "flood",
+    "ms": 680
+   },
+   "outLen": 41
+  },
+  {
+   "id": "wall",
+   "type": "Wall",
+   "index": 6,
+   "startBeat": 36,
+   "beats": 8,
+   "start": 1080,
+   "end": 1320,
+   "dur": 240,
+   "in": {
+    "type": "flood",
+    "ms": 680
+   },
+   "inLen": 41,
+   "tone": "light",
+   "music": "build",
+   "events": {
+    "pull": 0,
+    "land": 60,
+    "title": 75
+   },
+   "eventBeats": {
+    "pull": 0,
+    "land": 2,
+    "title": 2.5
+   },
+   "out": {
+    "type": "iris",
+    "ms": 520
+   },
+   "outLen": 31
+  },
+  {
+   "id": "end",
+   "type": "EndCard",
+   "index": 7,
+   "startBeat": 44,
+   "beats": 8,
+   "start": 1320,
+   "end": 1560,
+   "dur": 240,
+   "in": {
+    "type": "iris",
+    "ms": 520
+   },
+   "inLen": 31,
+   "tone": "light",
+   "music": "out",
+   "events": {
+    "line": 0,
+    "product": 30,
+    "url": 60
+   },
+   "eventBeats": {
+    "line": 0,
+    "product": 1,
+    "url": 2
+   },
+   "out": {
+    "type": "cut",
+    "ms": 0
+   },
+   "outLen": 0
+  }
+ ],
+ "cues": [
+  {
+   "at": 0,
+   "sfx": "hit",
+   "gain": -2,
+   "frame": 0,
+   "scene": "hook"
+  },
+  {
+   "at": "line1",
+   "sfx": "tick",
+   "frame": 30,
+   "scene": "hook"
+  },
+  {
+   "at": "swap1",
+   "sfx": "pop",
+   "pitch": 0,
+   "frame": 60,
+   "scene": "hook"
+  },
+  {
+   "at": "swap2",
+   "sfx": "pop",
+   "pitch": 1,
+   "frame": 90,
+   "scene": "hook"
+  },
+  {
+   "frame": 240,
+   "sfx": "swish",
+   "leadFrames": 31,
+   "gain": 0,
+   "scene": "reveal",
+   "why": "iris into reveal"
+  },
+  {
+   "at": "mark",
+   "sfx": "pop",
+   "gain": 2,
+   "frame": 240,
+   "scene": "reveal"
+  },
+  {
+   "at": "name",
+   "sfx": "shimmer",
+   "frame": 255,
+   "scene": "reveal"
+  },
+  {
+   "at": "tagline",
+   "sfx": "tick",
+   "gain": -3,
+   "frame": 285,
+   "scene": "reveal"
+  },
+  {
+   "frame": 360,
+   "sfx": "swish",
+   "leadFrames": 34,
+   "gain": 0,
+   "scene": "plan",
+   "why": "push into plan"
+  },
+  {
+   "at": "trigger",
+   "sfx": "click",
+   "frame": 390,
+   "scene": "plan"
+  },
+  {
+   "at": "react",
+   "sfx": "pop",
+   "frame": 420,
+   "scene": "plan"
+  },
+  {
+   "at": "payoff",
+   "sfx": "chime",
+   "frame": 450,
+   "scene": "plan"
+  },
+  {
+   "frame": 600,
+   "sfx": "whip",
+   "leadFrames": 14,
+   "gain": 0,
+   "scene": "montage",
+   "why": "whip into montage"
+  },
+  {
+   "at": "item0",
+   "sfx": "thock",
+   "pitch": 0,
+   "frame": 600,
+   "scene": "montage"
+  },
+  {
+   "at": "item1",
+   "sfx": "tick",
+   "pitch": 1,
+   "frame": 615,
+   "scene": "montage"
+  },
+  {
+   "at": "item2",
+   "sfx": "thock",
+   "pitch": 2,
+   "frame": 630,
+   "scene": "montage"
+  },
+  {
+   "at": "item3",
+   "sfx": "tick",
+   "pitch": 3,
+   "frame": 645,
+   "scene": "montage"
+  },
+  {
+   "frame": 720,
+   "sfx": "whoosh",
+   "leadFrames": 29,
+   "gain": 0,
+   "scene": "focus",
+   "why": "zoom into focus"
+  },
+  {
+   "at": "trigger",
+   "sfx": "click",
+   "frame": 750,
+   "scene": "focus"
+  },
+  {
+   "at": "react",
+   "sfx": "pop",
+   "frame": 780,
+   "scene": "focus"
+  },
+  {
+   "at": "payoff",
+   "sfx": "chime",
+   "frame": 810,
+   "scene": "focus"
+  },
+  {
+   "frame": 960,
+   "sfx": "swish",
+   "leadFrames": 28,
+   "gain": 0,
+   "scene": "stat",
+   "why": "wipe into stat"
+  },
+  {
+   "at": "count",
+   "sfx": "count",
+   "beats": 1.5,
+   "frame": 960,
+   "scene": "stat",
+   "durFrames": 45
+  },
+  {
+   "at": "land",
+   "sfx": "hit",
+   "gain": -2,
+   "frame": 1005,
+   "scene": "stat"
+  },
+  {
+   "frame": 1080,
+   "sfx": "whoosh",
+   "leadFrames": 41,
+   "gain": 0,
+   "scene": "wall",
+   "why": "flood into wall"
+  },
+  {
+   "at": "pull",
+   "sfx": "riser",
+   "beats": 2,
+   "frame": 1080,
+   "scene": "wall",
+   "durFrames": 60
+  },
+  {
+   "at": "land",
+   "sfx": "hit",
+   "frame": 1140,
+   "scene": "wall"
+  },
+  {
+   "frame": 1320,
+   "sfx": "swish",
+   "leadFrames": 31,
+   "gain": 0,
+   "scene": "end",
+   "why": "iris into end"
+  },
+  {
+   "at": "product",
+   "sfx": "chime",
+   "gain": -1,
+   "frame": 1350,
+   "scene": "end"
+  },
+  {
+   "at": "url",
+   "sfx": "tick",
+   "gain": -4,
+   "frame": 1380,
+   "scene": "end"
+  }
+ ]
+}

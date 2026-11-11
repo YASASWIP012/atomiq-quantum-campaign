@@ -1,0 +1,333 @@
+{
+ "id": "starter-long",
+ "meta": {
+  "fps": 30,
+  "bpm": 120,
+  "beatsPerBar": 4,
+  "tailBeats": 2,
+  "title": "Starter — long-form skeleton (extend with more Journey scenes)",
+  "chords": [
+   "Cmaj7",
+   "Am7",
+   "Fmaj7",
+   "G"
+  ],
+  "target": 21,
+  "framesPerBeat": 15,
+  "totalBeats": 42,
+  "durationInFrames": 630,
+  "seconds": 21
+ },
+ "brand": {
+  "bg": "#F5F4F1",
+  "surface": "#FFFFFF",
+  "ink": "#121214",
+  "muted": "#6E6E78",
+  "line": "#E5E3DE",
+  "accent": "#3B5BFF",
+  "accentInk": "#FFFFFF",
+  "dark": "#0E0F13",
+  "darkInk": "#F3F3F6",
+  "fontDisplay": "Inter",
+  "fontText": "Inter",
+  "fontMono": "Geist Mono",
+  "fontSerif": "Instrument Serif",
+  "emphasis": "accent",
+  "tracking": -0.045,
+  "weight": 750,
+  "look": "soft",
+  "aurora": [
+   "#B7C4FF",
+   "#E6CCFF",
+   "#FFD9C7",
+   "#C9DCFF",
+   "#FFFFFF"
+  ],
+  "auroraStrength": 0.4
+ },
+ "scenes": [
+  {
+   "id": "open",
+   "type": "Journey",
+   "index": 0,
+   "startBeat": 0,
+   "beats": 12,
+   "start": 0,
+   "end": 180,
+   "dur": 180,
+   "in": {
+    "type": "cut",
+    "ms": 0
+   },
+   "inLen": 0,
+   "tone": "light",
+   "music": "sparse",
+   "events": {
+    "type": 75,
+    "send": 135
+   },
+   "eventBeats": {
+    "type": 5,
+    "send": 9
+   },
+   "out": {
+    "type": "blur",
+    "ms": 420
+   },
+   "outLen": 13
+  },
+  {
+   "id": "journey",
+   "type": "Journey",
+   "index": 1,
+   "startBeat": 12,
+   "beats": 16,
+   "start": 180,
+   "end": 420,
+   "dur": 240,
+   "in": {
+    "type": "blur",
+    "ms": 420
+   },
+   "inLen": 13,
+   "tone": "light",
+   "music": "full",
+   "events": {
+    "trigger": 60,
+    "react": 75,
+    "payoff": 90
+   },
+   "eventBeats": {
+    "trigger": 4,
+    "react": 5,
+    "payoff": 6
+   },
+   "out": {
+    "type": "blur",
+    "ms": 420
+   },
+   "outLen": 13
+  },
+  {
+   "id": "outro",
+   "type": "Outro",
+   "index": 2,
+   "startBeat": 28,
+   "beats": 12,
+   "start": 420,
+   "end": 630,
+   "dur": 210,
+   "in": {
+    "type": "blur",
+    "ms": 420
+   },
+   "inLen": 13,
+   "tone": "light",
+   "music": "out",
+   "events": {
+    "mark": 0,
+    "line": 15,
+    "roll": 30,
+    "url": 53,
+    "click": 68
+   },
+   "eventBeats": {
+    "mark": 0,
+    "line": 1,
+    "roll": 2,
+    "url": 3.5,
+    "click": 4.5
+   },
+   "out": {
+    "type": "cut",
+    "ms": 0
+   },
+   "outLen": 0
+  }
+ ],
+ "cues": [
+  {
+   "at": -2.2,
+   "sfx": "tick",
+   "gain": -9,
+   "frame": -33,
+   "scene": "open"
+  },
+  {
+   "at": 4,
+   "sfx": "tick",
+   "gain": -9,
+   "frame": 60,
+   "scene": "open"
+  },
+  {
+   "at": 5,
+   "sfx": "whoosh",
+   "gain": -8,
+   "offset": 0,
+   "frame": 75,
+   "scene": "open"
+  },
+  {
+   "at": "type",
+   "sfx": "type",
+   "beats": 3,
+   "frame": 75,
+   "scene": "open",
+   "durFrames": 45
+  },
+  {
+   "at": "send",
+   "sfx": "click",
+   "frame": 135,
+   "scene": "open"
+  },
+  {
+   "at": 9.6,
+   "sfx": "whoosh",
+   "gain": -8,
+   "offset": 0,
+   "frame": 144,
+   "scene": "open"
+  },
+  {
+   "frame": 180,
+   "sfx": "swish",
+   "leadFrames": 13,
+   "gain": 0,
+   "scene": "journey",
+   "why": "blur into journey"
+  },
+  {
+   "at": 0.5,
+   "sfx": "tick",
+   "gain": -9,
+   "frame": 188,
+   "scene": "journey"
+  },
+  {
+   "at": 1,
+   "sfx": "pop",
+   "gain": -5,
+   "frame": 195,
+   "scene": "journey"
+  },
+  {
+   "at": 1.2,
+   "sfx": "tick",
+   "gain": -11,
+   "frame": 198,
+   "scene": "journey"
+  },
+  {
+   "at": 1.2,
+   "sfx": "pop",
+   "gain": -5,
+   "frame": 198,
+   "scene": "journey"
+  },
+  {
+   "at": 1.4,
+   "sfx": "pop",
+   "gain": -5,
+   "frame": 201,
+   "scene": "journey"
+  },
+  {
+   "at": 1.6,
+   "sfx": "pop",
+   "gain": -5,
+   "frame": 204,
+   "scene": "journey"
+  },
+  {
+   "at": 1.8,
+   "sfx": "pop",
+   "gain": -5,
+   "frame": 207,
+   "scene": "journey"
+  },
+  {
+   "at": 2.4,
+   "sfx": "tick",
+   "gain": -11,
+   "frame": 216,
+   "scene": "journey"
+  },
+  {
+   "at": 3.2,
+   "sfx": "tick",
+   "gain": -11,
+   "frame": 228,
+   "scene": "journey"
+  },
+  {
+   "at": 7.6,
+   "sfx": "whoosh",
+   "gain": -8,
+   "offset": 0,
+   "frame": 294,
+   "scene": "journey"
+  },
+  {
+   "at": 8,
+   "sfx": "tick",
+   "gain": -9,
+   "frame": 300,
+   "scene": "journey"
+  },
+  {
+   "frame": 420,
+   "sfx": "swish",
+   "leadFrames": 13,
+   "gain": 0,
+   "scene": "outro",
+   "why": "blur into outro"
+  },
+  {
+   "at": "mark",
+   "sfx": "pop",
+   "gain": 1,
+   "frame": 420,
+   "scene": "outro"
+  },
+  {
+   "at": "line",
+   "sfx": "tick",
+   "gain": -6,
+   "frame": 435,
+   "scene": "outro"
+  },
+  {
+   "at": "roll",
+   "sfx": "count",
+   "beats": 1.2,
+   "gain": -6,
+   "frame": 450,
+   "scene": "outro",
+   "durFrames": 18
+  },
+  {
+   "at": "url",
+   "sfx": "swish",
+   "gain": -6,
+   "frame": 473,
+   "scene": "outro"
+  },
+  {
+   "at": "click",
+   "sfx": "click",
+   "gain": 0,
+   "frame": 488,
+   "scene": "outro"
+  },
+  {
+   "at": "click",
+   "sfx": "chime",
+   "gain": -3,
+   "offset": 2,
+   "frame": 490,
+   "scene": "outro"
+  }
+ ]
+}

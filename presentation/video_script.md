@@ -1,4 +1,4 @@
-# Demo video script (draft 1, for approval)
+# Demo video script (approved; built in presentation/motion)
 
 Length about 95 s (the rules allow 1 to 2 min). The voice is your ElevenLabs clone. IBM look: Plex type, IBM Blue #0F62FE on white.
 "Footage" means a screen recording of the live page at https://yasaswip012.github.io/atomiq-quantum-campaign/. "Motion" means animated type and charts built from the result files.

@@ -39,7 +39,7 @@ We have no real users: this is a hackathon task scored on hidden labels, and we 
 | **Judges' page (no login): answer, live Stage 2 checker, Stage 3 sampler** | https://yasaswip012.github.io/atomiq-quantum-campaign/ |
 | CI (tests + full rerun on every push) | [![ci](https://github.com/YASASWIP012/atomiq-quantum-campaign/actions/workflows/ci.yml/badge.svg)](https://github.com/YASASWIP012/atomiq-quantum-campaign/actions/workflows/ci.yml) |
 | Slide deck (PDF, built from the result files) | [`presentation/deck.pdf`](presentation/deck.pdf) |
-| Video walkthrough (1 min 57 s) | [Google Drive](https://drive.google.com/file/d/1gyAnmR2OFbqoD_Thv0iyW7rwI3YuVDzm/view?usp=sharing) · same file in the repo: [`presentation/walkthrough.mp4`](presentation/walkthrough.mp4) (rebuilt from the result files by `scripts/make_video.py`) |
+| Video walkthrough (1 min 25 s) | [Google Drive](https://drive.google.com/file/d/1gyAnmR2OFbqoD_Thv0iyW7rwI3YuVDzm/view?usp=sharing) · same file in the repo: [`presentation/walkthrough.mp4`](presentation/walkthrough.mp4) (motion film with screen recordings of the live page, built in `presentation/motion`; every number comes from the result files) |
 | Result files | [`stage1_predictions.csv`](stage1_predictions.csv), [`stage2_selection.csv`](stage2_selection.csv) / [`.json`](stage2_selection.json), [`stage3_simulation.csv`](stage3_simulation.csv) / [`.json`](stage3_simulation.json) |
 | Notebook (runs the modules, shows every result, runs the 25 checks) | [`notebooks/end_to_end.ipynb`](notebooks/end_to_end.ipynb) |
 | Pre-registered model-selection rule (committed before any fit) | [`PREREGISTRATION.md`](PREREGISTRATION.md) |
@@ -320,7 +320,7 @@ src/atomiq/
   stage3.py                   encoding circuit, exact/Monte Carlo/Aer/noisy/mitigated estimates, error budget
 scripts/
   check_submission.py         25 consistency checks across the three stages
-  make_video.py               builds the narrated walkthrough video from the deck and live plots (ElevenLabs if a key is set, else the macOS voice)
+  make_video.py               older slide-based walkthrough builder (kept for reference; the current video is presentation/motion)
   run_hardware.py             optional real-QPU job (ibm_kingston)
   make_deck.py                builds presentation/deck.pdf from the result files
   build_site.py               builds the judges' page data (docs/) from the result files

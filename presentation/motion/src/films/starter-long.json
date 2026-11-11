@@ -1,0 +1,294 @@
+{
+ "meta": {
+  "title": "Starter \u2014 long-form skeleton (extend with more Journey scenes)",
+  "fps": 30,
+  "bpm": 120,
+  "beatsPerBar": 4,
+  "tailBeats": 2,
+  "chords": [
+   "Cmaj7",
+   "Am7",
+   "Fmaj7",
+   "G"
+  ],
+  "target": 21
+ },
+ "brand": {
+  "bg": "#F5F4F1",
+  "surface": "#FFFFFF",
+  "ink": "#121214",
+  "muted": "#6E6E78",
+  "line": "#E5E3DE",
+  "accent": "#3B5BFF",
+  "accentInk": "#FFFFFF",
+  "dark": "#0E0F13",
+  "darkInk": "#F3F3F6",
+  "fontDisplay": "Inter",
+  "fontText": "Inter",
+  "fontMono": "Geist Mono",
+  "fontSerif": "Instrument Serif",
+  "emphasis": "accent",
+  "tracking": -0.045,
+  "weight": 750,
+  "look": "soft",
+  "aurora": [
+   "#B7C4FF",
+   "#E6CCFF",
+   "#FFD9C7",
+   "#C9DCFF",
+   "#FFFFFF"
+  ],
+  "auroraStrength": 0.4
+ },
+ "grain": 0.035,
+ "scenes": [
+  {
+   "id": "open",
+   "type": "Journey",
+   "bars": 3,
+   "music": "sparse",
+   "events": {
+    "type": 5,
+    "send": 9
+   },
+   "props": {
+    "captions": [
+     {
+      "at": -2.2,
+      "until": 3.4,
+      "text": "Your day plans *itself*."
+     },
+     {
+      "at": 4,
+      "until": 11.4,
+      "text": "Just tell it what's on.",
+      "pos": [
+       0.5,
+       0.25
+      ]
+     }
+    ],
+    "panels": [
+     {
+      "id": "field",
+      "screen": "KitTypeField",
+      "props": {
+       "placeholder": "What's on today?",
+       "text": "Ship v2, gym, dinner with Sam",
+       "at": "type",
+       "submitAt": "send",
+       "hint": "Daybook fits it around your calendar"
+      },
+      "chrome": "card",
+      "x": 0,
+      "y": 60,
+      "w": 900,
+      "h": 200,
+      "from": 4.2,
+      "enter": "rise",
+      "radius": 36
+     }
+    ],
+    "shots": [
+     {
+      "at": 0,
+      "zoom": 1
+     },
+     {
+      "at": 5,
+      "zoom": 1.35,
+      "y": 60,
+      "ms": 1400
+     },
+     {
+      "at": 9.6,
+      "zoom": 1,
+      "y": 0,
+      "ms": 1000
+     }
+    ]
+   },
+   "addCues": [
+    {
+     "at": "type",
+     "sfx": "type",
+     "beats": 3
+    },
+    {
+     "at": "send",
+     "sfx": "click"
+    }
+   ]
+  },
+  {
+   "id": "journey",
+   "type": "Journey",
+   "bars": 4,
+   "in": "blur",
+   "music": "full",
+   "events": {
+    "trigger": 4,
+    "react": 5,
+    "payoff": 6
+   },
+   "props": {
+    "captions": [
+     {
+      "at": 0.5,
+      "until": 3.6,
+      "text": "Daybook is\u2026",
+      "swap": [
+       "reading your calendar",
+       "finding focus time",
+       "*ready.*"
+      ],
+      "swapAt": [
+       1.2,
+       2.4,
+       3.2
+      ]
+     },
+     {
+      "at": 8,
+      "until": 15.4,
+      "text": "Every day, *sorted*.",
+      "pos": [
+       0.5,
+       0.12
+      ]
+     }
+    ],
+    "panels": [
+     {
+      "id": "phone",
+      "screen": "SampleApp",
+      "chrome": "phone",
+      "x": 0,
+      "y": 60,
+      "z": 0,
+      "w": 400,
+      "h": 820,
+      "from": 3.6,
+      "enter": "rise"
+     },
+     {
+      "id": "c0",
+      "screen": "SampleCard",
+      "props": {
+       "index": 0
+      },
+      "x": -700,
+      "y": -200,
+      "z": -500,
+      "w": 520,
+      "h": 390,
+      "lw": 800,
+      "lh": 600,
+      "from": 1.0,
+      "enter": "pop"
+     },
+     {
+      "id": "c1",
+      "screen": "SampleCard",
+      "props": {
+       "index": 1
+      },
+      "x": 0,
+      "y": -260,
+      "z": -200,
+      "w": 520,
+      "h": 390,
+      "lw": 800,
+      "lh": 600,
+      "from": 1.2,
+      "enter": "pop"
+     },
+     {
+      "id": "c2",
+      "screen": "SampleCard",
+      "props": {
+       "index": 2
+      },
+      "x": 700,
+      "y": -180,
+      "z": -600,
+      "w": 520,
+      "h": 390,
+      "lw": 800,
+      "lh": 600,
+      "from": 1.4,
+      "enter": "pop"
+     },
+     {
+      "id": "c3",
+      "screen": "SampleCard",
+      "props": {
+       "index": 3
+      },
+      "x": -380,
+      "y": 300,
+      "z": -350,
+      "w": 520,
+      "h": 390,
+      "lw": 800,
+      "lh": 600,
+      "from": 1.6,
+      "enter": "pop"
+     },
+     {
+      "id": "c4",
+      "screen": "SampleCard",
+      "props": {
+       "index": 4
+      },
+      "x": 380,
+      "y": 280,
+      "z": -450,
+      "w": 520,
+      "h": 390,
+      "lw": 800,
+      "lh": 600,
+      "from": 1.8,
+      "enter": "pop"
+     }
+    ],
+    "shots": [
+     {
+      "at": 0,
+      "zoom": 1
+     },
+     {
+      "at": 3.8,
+      "zoom": 1.05,
+      "y": 40,
+      "ms": 1000
+     },
+     {
+      "at": 7.6,
+      "zoom": 0.7,
+      "z": -300,
+      "ms": 1600
+     }
+    ]
+   }
+  },
+  {
+   "id": "outro",
+   "type": "Outro",
+   "bars": 3,
+   "in": "blur",
+   "music": "out",
+   "props": {
+    "name": "Daybook",
+    "markSvg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><rect x=\"1\" y=\"1\" width=\"30\" height=\"30\" rx=\"9\" fill=\"#3B5BFF\"/><path d=\"M10 16.5l4 4 8-9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
+    "line": "Plan less, do more \u2014",
+    "roll": [
+     "today",
+     "this week",
+     "*every day.*"
+    ],
+    "url": "daybook.example"
+   }
+  }
+ ]
+}

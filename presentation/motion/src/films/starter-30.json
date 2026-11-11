@@ -1,0 +1,175 @@
+{
+ "meta": {
+  "title": "Starter \u2014 short launch (26 s)",
+  "fps": 60,
+  "bpm": 120,
+  "beatsPerBar": 4,
+  "tailBeats": 0,
+  "chords": [
+   "Cmaj7",
+   "Am7",
+   "Fmaj7",
+   "G"
+  ],
+  "target": 26
+ },
+ "brand": {
+  "bg": "#F5F4F1",
+  "surface": "#FFFFFF",
+  "ink": "#121214",
+  "muted": "#6E6E78",
+  "line": "#E5E3DE",
+  "accent": "#3B5BFF",
+  "accentInk": "#FFFFFF",
+  "dark": "#0E0F13",
+  "darkInk": "#F3F3F6",
+  "fontDisplay": "Inter",
+  "fontText": "Inter",
+  "fontMono": "Geist Mono",
+  "fontSerif": "Instrument Serif",
+  "emphasis": "accent",
+  "tracking": -0.045,
+  "weight": 750,
+  "look": "flat",
+  "aurora": [
+   "#B7C4FF",
+   "#E6CCFF",
+   "#FFD9C7",
+   "#C9DCFF",
+   "#FFFFFF"
+  ],
+  "auroraStrength": 0.4
+ },
+ "grain": 0.04,
+ "scenes": [
+  {
+   "id": "hook",
+   "type": "Hook",
+   "bars": 2,
+   "props": {
+    "lines": [
+     "Planning your day",
+     "takes"
+    ],
+    "swap": [
+     "an hour.",
+     "forever.",
+     "*one tap.*"
+    ]
+   }
+  },
+  {
+   "id": "reveal",
+   "type": "Reveal",
+   "bars": 1,
+   "in": "iris",
+   "props": {
+    "name": "Daybook",
+    "tagline": "Your day, planned in one tap.",
+    "markSvg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><rect x=\"1\" y=\"1\" width=\"30\" height=\"30\" rx=\"9\" fill=\"#3B5BFF\"/><path d=\"M10 16.5l4 4 8-9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
+   }
+  },
+  {
+   "id": "plan",
+   "type": "Feature",
+   "bars": 2,
+   "in": "push",
+   "props": {
+    "num": "01",
+    "of": 3,
+    "eyebrow": "Plan",
+    "headline": [
+     "Tap once.",
+     "Day planned."
+    ],
+    "sentence": "Daybook turns your tasks into a schedule that fits.",
+    "screen": "SampleApp",
+    "device": "phone",
+    "callouts": [
+     {
+      "at": 3.1,
+      "x": 120,
+      "y": 470,
+      "label": "2.25 h planned",
+      "side": "right",
+      "len": 70
+     }
+    ]
+   }
+  },
+  {
+   "id": "montage",
+   "type": "Montage",
+   "bars": 1,
+   "in": "whip",
+   "props": {
+    "items": [
+     "Meetings.",
+     "Focus.",
+     "Errands.",
+     "*Rest.*"
+    ],
+    "step": 0.5
+   }
+  },
+  {
+   "id": "focus",
+   "type": "Feature",
+   "bars": 2,
+   "in": "zoom",
+   "tone": "dark",
+   "props": {
+    "num": "02",
+    "of": 3,
+    "eyebrow": "Focus",
+    "headline": [
+     "Protect",
+     "deep work."
+    ],
+    "sentence": "Focus blocks move around your meetings, not the other way round.",
+    "screen": "SampleApp",
+    "device": "phone",
+    "side": "left"
+   }
+  },
+  {
+   "id": "stat",
+   "type": "Stat",
+   "bars": 1,
+   "in": "wipe",
+   "props": {
+    "value": 2.25,
+    "decimals": 2,
+    "suffix": " h",
+    "label": "planned in one tap.",
+    "sub": "Illustrative example \u2014 replace with a real number."
+   }
+  },
+  {
+   "id": "wall",
+   "type": "Wall",
+   "bars": 2,
+   "in": "flood",
+   "props": {
+    "title": "Every day, *sorted*.",
+    "card": "SampleCard",
+    "count": 15,
+    "cols": 5
+   }
+  },
+  {
+   "id": "end",
+   "type": "EndCard",
+   "bars": 2,
+   "in": "iris",
+   "props": {
+    "line": "Plan less. *Do more.*",
+    "product": "Daybook",
+    "markSvg": "<svg width=\"32\" height=\"32\" viewBox=\"0 0 32 32\"><rect x=\"1\" y=\"1\" width=\"30\" height=\"30\" rx=\"9\" fill=\"#3B5BFF\"/><path d=\"M10 16.5l4 4 8-9\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>",
+    "url": "daybook.example",
+    "cta": "Free to start",
+    "phoneScreen": "SampleApp"
+   }
+  }
+ ]
+}
