@@ -30,7 +30,7 @@ We have no real users: this is a hackathon task scored on hidden labels, and we 
 
 - **Live page, no login.** https://yasaswip012.github.io/atomiq-quantum-campaign/ shows the answer. It lets you pick any six customers and compare them with brute force, and it samples the Stage 3 distribution in your browser.
 - **CI on a different operating system.** Every push reruns all three stages from scratch on Ubuntu. CI then checks that the ranking, the top 10 and the six customers match the committed files, with probabilities equal to within 1e-15. ([latest runs](https://github.com/YASASWIP012/atomiq-quantum-campaign/actions/workflows/ci.yml))
-- **One command.** `make setup && make all` rebuilds every result file, runs 26 tests and a 25-point cross-stage check.
+- **One command.** `make setup && make all` rebuilds every result file, runs 26 tests and a 26-point cross-stage check.
 
 ## Links
 
@@ -43,7 +43,7 @@ We have no real users: this is a hackathon task scored on hidden labels, and we 
 | Result files | [`stage1_predictions.csv`](stage1_predictions.csv), [`stage2_selection.csv`](stage2_selection.csv) / [`.json`](stage2_selection.json), [`stage3_simulation.csv`](stage3_simulation.csv) / [`.json`](stage3_simulation.json) |
 | Notebook (runs the modules, shows every result, runs the 25 checks) | [`notebooks/end_to_end.ipynb`](notebooks/end_to_end.ipynb) |
 | Pre-registered model-selection rule (committed before any fit) | [`PREREGISTRATION.md`](PREREGISTRATION.md) |
-| Submission self-check (25 checks) | `make check` → [`scripts/check_submission.py`](scripts/check_submission.py) |
+| Submission self-check (26 checks) | `make check` → [`scripts/check_submission.py`](scripts/check_submission.py) |
 
 ## Why IBM Quantum and Qiskit
 
@@ -121,7 +121,7 @@ What this shows, stated plainly: on 300 rows with 35 positives, the quantum kern
 1. Dropping job, marital, education and default lifted LR's CV ROC-AUC from 0.605 to 0.621. The first-run table is `stage1_cv_summary_ablation_allcats.csv`.
 2. The first run used unregularised Platt scaling (C = 1e4). On inner folds with about four positives it became overconfident, and the quantum models' log loss reached 0.55 ± 0.84. Regularising it (C = 1) brought that to 0.367 ± 0.024. That table is `stage1_cv_summary_ablation_unregularised_platt.csv`. The decision rule did not change.
 3. Our CI reruns everything on Linux. The first such run produced a different top 10 from macOS: Linux LAPACK returned one PCA component with the opposite sign, and the ZZ feature map is not sign-symmetric, so the kernel changed. We now fix each component's sign by the skew of its training projections (a first attempt, "largest loading positive", still tied on one-hot pairs with exactly opposite loadings). We also round tuning scores to 6 decimals so exact ties break the same way everywhere. This fix changed our own answer: before it, the final blend was 0.7 · LR + 0.3 · PQK and the six were C0031, C0256, C0028, C0338, C0079 and C0088. We kept the new result because it is what the committed procedure produces once it is platform-independent.
-4. A blind review pointed out that the three test customers whose previous campaign succeeded got low probabilities (0.13 to 0.17), although that group subscribed 6 times out of 10 in training. Two things caused it. `poutcome = success` covers only 10 training rows, so L2 regularisation shrank its one-hot column toward zero. And the final blend at that time put weight 0.8 on a near-chance kernel. We added a "previous campaign succeeded" flag and standardised the one-hot columns, comparing variants on training-only CV. LR's CV PR-AUC rose from 0.269 to 0.332 and its Brier score improved from 0.1016 to 0.0965. The table before this change is `results/stage1_cv_summary_ablation_no_success_flag.csv`. The decision rule was not changed. This change also changed our six customers, from C0028, C0229, C0183, C0170, C0007, C0031 to the list at the top.
+4. A blind review pointed out that the three test customers whose previous campaign succeeded got low probabilities (0.13 to 0.17), although that group subscribed 6 times out of 10 in training. That prompt came from looking at test-set features and our own test predictions, never test labels, which we don't have. The fix itself was chosen on training-only CV. Two things caused it. `poutcome = success` covers only 10 training rows, so L2 regularisation shrank its one-hot column toward zero. And the final blend at that time put weight 0.8 on a near-chance kernel. We added a "previous campaign succeeded" flag and standardised the one-hot columns, comparing variants on training-only CV. LR's CV PR-AUC rose from 0.269 to 0.332 and its Brier score improved from 0.1016 to 0.0965. The table before this change is `results/stage1_cv_summary_ablation_no_success_flag.csv`. The decision rule was not changed. This change also changed our six customers, from C0028, C0229, C0183, C0170, C0007, C0031 to the list at the top.
 
 ![reliability](figures/stage1_reliability.png)
 

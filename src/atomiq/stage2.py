@@ -336,7 +336,7 @@ def main():
         "qubit_to_customer": dict(zip(c.qubit.tolist(), c.customer_id.tolist())),
         "selected_ids": sel_ids,
         "selected_bitstring_qiskit_order": sel[0],
-        "selected_bitstring_note": "Qiskit big-endian key; rightmost character is qubit 0 = rank-1 candidate",
+        "selected_bitstring_note": "Qiskit little-endian ordering: the rightmost character is qubit 0 = the rank-1 candidate",
         "total_budget_used": int(c.contact_cost.values @ x_sel), "budget_limit": BUDGET,
         "total_capacity_used": int(c.capacity_units.values @ x_sel), "capacity_limit": CAPACITY,
         "objective_value": sel[1],

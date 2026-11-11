@@ -32,7 +32,7 @@
     "C0374"
   ],
   "selected_bitstring_qiskit_order": "1010010111",
-  "selected_bitstring_note": "Qiskit big-endian key; rightmost character is qubit 0 = rank-1 candidate",
+  "selected_bitstring_note": "Qiskit little-endian ordering: the rightmost character is qubit 0 = the rank-1 candidate",
   "total_budget_used": 13,
   "budget_limit": 25,
   "total_capacity_used": 10,
@@ -319,5 +319,5 @@
   "ibm_hardware": null,
   "n_feasible_subsets": 210,
   "n_cardinality_subsets": 210,
-  "runtime_s": 195.4
+  "runtime_s": 164.2
 }

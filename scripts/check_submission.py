@@ -48,6 +48,9 @@ p = s1.set_index("customer_id").predicted_probability
 obj = float((p[sel] * d.loc[sel, "expected_deposit_value"] - d.loc[sel, "contact_cost"]).sum())
 check(abs(obj - s2["objective_value"]) < 1e-9, "stage2 objective recomputes from stage1 probabilities")
 check(s2["optimality_gap"] >= -1e-12, f"optimality gap = {s2['optimality_gap']:.3g}")
+bits = s2["selected_bitstring_qiskit_order"][::-1]  # Qiskit little-endian: rightmost char is qubit 0
+decoded = [s2["qubit_to_customer"][str(q)] for q, ch in enumerate(bits) if ch == "1"]
+check(sorted(decoded) == sorted(sel), "stage2 bitstring decodes to the selected IDs")
 
 s3 = json.loads((ROOT / "stage3_simulation.json").read_text())
 check(set(s3["selected_ids"]) == set(sel), "stage3 uses the stage2 selection")
