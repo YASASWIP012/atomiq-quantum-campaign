@@ -1,8 +1,17 @@
-# Six customers, one campaign: a hybrid quantum-classical term-deposit pipeline
+# Six customers, one campaign
 
-Our entry to The Atomiq Hackathon (Qiskit Fall Fest 2026 at IEM) builds the three-stage campaign pipeline in Qiskit. It predicts who will subscribe, picks six customers to call with a QAOA circuit that obeys the "exactly six" rule by construction, and estimates the chance that at least three of them subscribe. Every quantum result is checked against an exact classical answer.
+A bank's campaign team can afford six calls for a term-deposit offer. This pipeline tells them which six customers to call and how likely the campaign is to reach three sign-ups. It is built on Qiskit and IBM Quantum tooling for The Atomiq Hackathon (Qiskit Fall Fest 2026 at IEM). Every quantum number in it is checked against an exact classical answer.
 
-## The answer
+## The problem
+
+Most people a bank calls about a term deposit say no. In the organisers' release, 46 of the 400 sampled customers subscribed (11.5%), and only 35 of the 300 labelled training customers did. The organisers' data sheet gives these counts. The customers come from the UCI Bank Marketing data (`bank.csv`), records of a Portuguese bank's phone campaigns (Moro, Cortez & Rita, *Decision Support Systems* 62, 2014). Calling everyone wastes money, and calling only the most likely customers ignores what each call costs and what each deposit is worth. The task gives each candidate a contact cost, an expected deposit and a capacity load, with limits of 25 and 22 for a call list of exactly six.
+
+So the team needs three answers:
+1. Who is likely to subscribe?
+2. Which six give the best expected value within the limits?
+3. How likely is it that at least three of those six subscribe?
+
+## The answer we submit
 
 | | Value | Where it comes from |
 |---|---|---|
@@ -14,6 +23,14 @@ Our entry to The Atomiq Hackathon (Qiskit Fall Fest 2026 at IEM) builds the thre
 | Uncertainty carried in from Stage 1 | 95% bootstrap band 0.021 to 0.329 | 200 refits on resampled training data |
 
 The last row matters most for the business reading. The probability that three of the six convert is low, and the estimate is only as good as a classifier trained on 35 positive examples. The quantum sampling error is about 180 times smaller than that model error.
+
+## Proof it runs
+
+We have no real users: this is a hackathon task scored on hidden labels, and we did not put the list in front of a bank. What we can show is that anyone can check the result without trusting us:
+
+- **Live page, no login.** https://yasaswip012.github.io/atomiq-quantum-campaign/ shows the answer. It lets you pick any six customers and compare them with brute force, and it samples the Stage 3 distribution in your browser.
+- **CI on a different operating system.** Every push reruns all three stages from scratch on Ubuntu. CI then checks that the ranking, the top 10 and the six customers match the committed files, with probabilities equal to within 1e-15. ([latest runs](https://github.com/YASASWIP012/atomiq-quantum-campaign/actions/workflows/ci.yml))
+- **One command.** `make setup && make all` rebuilds every result file, runs 26 tests and a 25-point cross-stage check.
 
 ## Links
 
@@ -27,7 +44,23 @@ The last row matters most for the business reading. The probability that three o
 | Pre-registered model-selection rule (committed before any fit) | [`PREREGISTRATION.md`](PREREGISTRATION.md) |
 | Submission self-check (25 checks) | `make check` → [`scripts/check_submission.py`](scripts/check_submission.py) |
 
-## Pipeline
+## Why IBM Quantum and Qiskit
+
+The task requires a quantum or hybrid method at each stage. Here is what the IBM stack does in ours.
+
+- **Stage 2 needs gate-level circuits that compile for IBM hardware.** We prepare the Dicke state from CX, CRY and CCRY gates, not `initialize`, and mix with Qiskit's `XXPlusYYGate`. That way the "exactly six customers" rule holds on every shot, and the same circuit transpiles to a Heron processor's heavy-hex layout. We report its real cost there: 663 two-qubit gates and 119 SWAPs at depth 3.
+- **Noise comes from IBM calibration data.** Noisy runs use `AerSimulator.from_backend(FakeKingston)`, a calibration snapshot of IBM's 156-qubit Heron r2. Readout mitigation is checked against IBM's `mthree`.
+- **The hardware path is ready.** `scripts/run_hardware.py` uses `qiskit-ibm-runtime` to send one job to `ibm_kingston` on the free Open Plan. We did not run it (see limits).
+
+None of this is a quantum advantage. Each problem here is small enough to solve exactly on a laptop, and we solve it exactly every time to check the quantum result.
+
+| Stage | Quantum part | Classical part | Verified against |
+|---|---|---|---|
+| 1 | ZZ feature-map states on 6 qubits, used as a fidelity kernel and a projected (single-qubit Pauli) kernel | preprocessing, PCA to 6 angles, SVM, Platt calibration, the blend weight, logistic regression | classical baselines in the same nested CV |
+| 2 | Dicke-state preparation, cost-phase layers, XY ring mixer, sampling | COBYLA parameter search, presolve, decoding | brute force over all 210 subsets |
+| 3 | 6-qubit RY product state, measurement | counting outcomes with ≥ 3 ones | exact Poisson-binomial and 10⁶-draw Monte Carlo |
+
+## How it works
 
 ```
 Stage1_Train (300, 35 yes) ──► nested CV ──► hybrid model ──► p_i for 100 test customers ──► top 10
@@ -41,17 +74,13 @@ Stage1_Train (300, 35 yes) ──► nested CV ──► hybrid model ──► 
 
 Stage 1 probabilities flow unchanged into Stages 2 and 3. `scripts/check_submission.py` recomputes the Stage 2 objective and the Stage 3 exact value from `stage1_predictions.csv` and fails if anything drifts.
 
-### What is quantum and what is classical
+- **Stage 1** turns each customer into six angles and encodes them in a 6-qubit ZZ feature map. The resulting quantum kernels are blended with logistic regression under a rule committed before any model was fitted.
+- **Stage 2** runs QAOA from a Dicke state with an XY ring mixer, so only valid six-customer picks can come out. It is checked against all 210 subsets.
+- **Stage 3** rotates one qubit per chosen customer to that customer's probability, counts shots with at least three ones, and compares the result with the exact Poisson-binomial value.
 
-| Stage | Quantum part | Classical part | Verified against |
-|---|---|---|---|
-| 1 | ZZ feature-map states on 6 qubits, used as a fidelity kernel and a projected (single-qubit Pauli) kernel | preprocessing, PCA to 6 angles, SVM, Platt calibration, the blend weight, logistic regression | classical baselines in the same nested CV |
-| 2 | Dicke-state preparation, cost-phase layers, XY ring mixer, sampling | COBYLA parameter search, presolve, decoding | brute force over all 210 subsets |
-| 3 | 6-qubit RY product state, measurement | counting outcomes with ≥ 3 ones | exact Poisson-binomial and 10⁶-draw Monte Carlo |
+## Evidence, stage by stage
 
-We make no claim of quantum advantage. Each problem here is small enough to solve exactly on a laptop, and we do that in every stage so the quantum results can be checked.
-
-## Stage 1: subscription prediction
+### Stage 1: subscription prediction
 
 **Data handling.** All preprocessing is fitted inside each training fold: a signed log transform for balance, logs of campaign, pdays and previous, a "contacted before" flag, standard scaling, and one-hot encoding of month, poutcome, contact, housing and loan. The test set is predicted once, at the end. The `duration` column is not in the release, which avoids the well-known leak in this dataset.
 
@@ -94,7 +123,7 @@ What this shows, stated plainly: on 300 rows with 35 positives, the quantum kern
 
 ![reliability](figures/stage1_reliability.png)
 
-## Stage 2: choosing six customers
+### Stage 2: choosing six customers
 
 **Problem.** Maximise Σᵢ (pᵢ · depositᵢ − costᵢ) xᵢ over the top 10, subject to Σ xᵢ = 6, Σ costᵢ xᵢ ≤ 25 and Σ capacityᵢ xᵢ ≤ 22.
 
@@ -125,7 +154,7 @@ At p = 3 the circuit returns the optimum 31 times more often than uniform guessi
 
 **Close call.** The runner-up subset scores 4.005, which is 4.0% below the optimum. A model with slightly different probabilities can swap one customer, as the bootstrap below shows.
 
-### Stress test: what happens when the constraints bind
+#### Stress test: what happens when the constraints bind
 
 On the real limits the cost layer has no ZZ terms, so the penalty and slack machinery never runs. To test it we kept the same ten candidates and tightened the limits until they bind (`python -m atomiq.stage2_stress`, results in `results/stage2_stress.json`). Each slack register is a bounded binary encoding of 0 to (limit − smallest 6-subset total), and a test checks that it covers exactly that range. The optimiser runs on an exact vectorised simulator that tests show matches Qiskit's statevector for both mixers.
 
@@ -148,7 +177,7 @@ What we take from this:
 - Results depend on the penalty weight and on where the optimiser starts. Rerunning p = 2 from random starts at λ multipliers of 0.25 to 4 gives P(feasible) anywhere from 0.40 to 0.73 in scenario A, 0.31 to 0.61 in B and 0.04 to 0.11 in C (table in the JSON).
 - At p = 1 on FakeKingston the circuits need 812 to 868 two-qubit gates and 161 to 184 SWAPs. That is too deep for useful hardware results today.
 
-## Stage 3: chance of at least three conversions
+### Stage 3: chance of at least three conversions
 
 **Circuit.** One qubit per selected customer, in rank order (q0 = C0028 … q5 = C0031), with RY(θᵢ) and θᵢ = 2 arcsin √pᵢ, so P(qubit i reads 1) = pᵢ. There are no entangling gates, because the task assumes customers respond independently. A shot counts as a success when at least three qubits read 1. The angles and counts are in `stage3_simulation.json`.
 
@@ -166,7 +195,7 @@ The reported estimate is 0.86 standard errors from the exact value, which is ord
 
 ![stage 3 estimates](figures/stage3_estimates.png)
 
-## Transpilation and noise
+### Transpilation and noise
 
 All transpilation used `optimization_level=3` with `seed_transpiler=42`, targeting `FakeKingston`, a snapshot of IBM's 156-qubit Heron r2 processor with a heavy-hex layout.
 
@@ -189,7 +218,7 @@ The Stage 3 circuit has no two-qubit gates, so readout error dominates its noise
 
 **Real hardware.** [`scripts/run_hardware.py`](scripts/run_hardware.py) submits one job to `ibm_kingston` on the IBM Quantum Open Plan. The job holds the Stage 3 circuit, two readout-calibration circuits and the Stage 2 p = 1 circuit, run with dynamical decoupling and gate twirling at 4,000 shots each. It saves raw counts and the job ID to `results/`. `make stage2 stage3` then adds hardware rows to the result files. Not run for this submission: the run needs an IBM Quantum API key, which we did not have during the sprint. All noisy results above therefore come from the FakeKingston noise model.
 
-## Error propagation across stages
+### Error propagation across stages
 
 We refitted the shipped Stage 1 model on 200 bootstrap resamples of the training set (seed 123) and pushed each replicate through the later stages.
 
@@ -215,13 +244,15 @@ The delta-method estimate is about 43% below the bootstrap value. The bootstrap 
 - The ranking is weak (CV ROC-AUC about 0.6). Treat this list as a reasonable first wave and record outcomes, so the next model has more than 35 positives to learn from.
 - Neither budget nor capacity is the bottleneck for this candidate pool: 12 of 25 budget and 7 of 22 capacity units remain unused. The limit is the six-call cap.
 
-## Limitations
+## Limits
 
 - The quantum classifiers did not beat logistic regression on this data, and we do not claim they did.
 - Stage 2 could be solved by sorting once we had shown the constraints were redundant. QAOA is the method the task asks for, and here we use it to show how a constraint-preserving ansatz behaves, ideal and noisy. It is not presented as a better solver.
 - All Stage 3 estimates except the hardware run come from simulators. FakeKingston is a calibration snapshot, not the live device.
 - The hidden test labels are unknown to us, so every Stage 1 metric above is cross-validated on the training set.
 - Bootstrapping 300 rows understates uncertainty from data the sample doesn't cover.
+- No real IBM QPU job was run, because we had no API key during the sprint. Every noisy number comes from the FakeKingston noise model.
+- No real users: the list has not been tested in a live campaign.
 
 ## Reproduce
 
